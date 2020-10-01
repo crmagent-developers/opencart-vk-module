@@ -1,0 +1,17 @@
+
+.btn-size {
+    font-size: 18px;
+}
+
+.vk_unit {
+    margin-bottom: 10px;
+}
+
+ul.nav-tabs > li > a {
+    outline: none;
+}
+
+.row.slim {
+    margin-left: 0;
+    margin-right: 0;
+}
