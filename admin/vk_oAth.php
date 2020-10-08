@@ -21,7 +21,7 @@ if (!$_GET) {
     $parameters = array(
         'client_id' => $setting_data['vk_oath_id_application'],
         'display' => 'page',
-        'redirect_uri' => HTTPS_SERVER . 'admin/vk_oAth.php',
+        'redirect_uri' => HTTPS_SERVER . 'vk_oAth.php',
         'scope' => 'offline,market,photos,groups',
         'response_type' => 'code',
         'v' => '5.131'
@@ -43,7 +43,7 @@ if (!$_GET) {
     $parameters = array(
         'client_id' => $setting_data['vk_oath_id_application'],
         'client_secret' => $setting_data['vk_oath_secret_key'],
-        'redirect_uri' => HTTPS_SERVER . 'admin/vk_oAth.php',
+        'redirect_uri' => HTTPS_SERVER . 'vk_oAth.php',
         'code' => $_GET['code']
     );
 
@@ -59,7 +59,7 @@ if (!$_GET) {
         $db->query("INSERT INTO " . DB_PREFIX . "setting SET store_id = '" . 0 . "', `code` = '" . $db->escape('vk_oath') . "', `key` = '" . $db->escape('vk_oath_access_token') . "', `value` = '" . $db->escape($accessToken) . "'");
         $db->query("INSERT INTO " . DB_PREFIX . "setting SET store_id = '" . 0 . "', `code` = '" . $db->escape('vk_oath') . "', `key` = '" . $db->escape('vk_oath_access_token_info') . "', `value` = '" . $db->escape($response) . "', serialized = '1'");
 
-        header('Location: ' . str_replace(array('&amp;', "\n", "\r"), array('&', '', ''), HTTPS_SERVER . 'admin/vk_oAth.php'), true, 302);
+        header('Location: ' . str_replace(array('&amp;', "\n", "\r"), array('&', '', ''), HTTPS_SERVER . 'vk_oAth.php'), true, 302);
         exit();
     } else {
         $accessToken = json_decode($response, true)['access_token_' . ltrim($setting_data['vk_oath_id_group'], '-')];
