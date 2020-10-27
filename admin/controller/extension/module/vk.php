@@ -87,15 +87,22 @@ class ControllerExtensionModuleVk extends Controller
         $this->load->model('extension/event');
         $this->load->model('extension/vk/tables');
 
+        $settings = [
+            'vk_event' => $this->model_setting_setting->getSetting('vk_event')
+        ];
+
+        if (!empty($settings['vk_event']) && $settings['vk_event'] == 1) {
+            $this->unsubscribeToVkEvents();
+        }
+
+        $this->model_extension_event->deleteEvent('vk');
         $this->model_extension_vk_tables->unsetTables();
-        $this->unsubscribeToVkEvents();
 
         $this->model_setting_setting->deleteSetting('vk');
         $this->model_setting_setting->deleteSetting('vk_oath');
         $this->model_setting_setting->deleteSetting('vk_settings');
         $this->model_setting_setting->deleteSetting('vk_event');
         $this->model_setting_setting->deleteSetting('vk_event_settings');
-        $this->model_extension_event->deleteEvent('vk');
     }
 
     public function index() {
