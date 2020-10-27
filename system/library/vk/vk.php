@@ -521,7 +521,7 @@ class vk
         $permalinks = $this->model_extension_vk_references->getPermalinks();
 
         $productsForExport = $this->getAllProducts($categories);
-        $productsForExport = $this->checkProducts($productsForExport, $categories);
+        $productsForExport = $this->checkProducts($productsForExport);
 
         foreach ($productsForExport as $product) {
 
@@ -582,18 +582,18 @@ class vk
                         $description .= $option['name'] . ': ' . $option['value'] . PHP_EOL;
                     }
 
-                    $description .= '________________________________________';
+                    $description .= '________________________________________' . PHP_EOL;
                 } else {
                     $offerId = 0;
                 }
 
                 if (isset($product['description'])) {
-                    $description .= preg_replace("(\<(\/?[^>]+)>)", '', htmlspecialchars_decode($product['description']));
+                    $description .= preg_replace("(\<(\/?[^>]+)>)", '', html_entity_decode($product['description'], ENT_QUOTES));
                 }
 
                 $data = array(
                     'owner_id' => (int)$this->oath['vk_oath_id_group'],
-                    'name' => htmlspecialchars_decode($product['name']),
+                    'name' => html_entity_decode($product['name'], ENT_QUOTES),
                     'description' => !empty($description) ? $description : $product['name'],
                     'category_id' => (int)$this->settings['vk_settings_category-conformity'][$id_main_category],
                     'price' => $price,
@@ -987,6 +987,9 @@ class vk
                 'optionName' => $option['name'],
                 'optionValue' => $optionValue['name']
             );
+        } else {
+
+            return [];
         }
     }
 
