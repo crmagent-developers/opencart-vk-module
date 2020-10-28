@@ -588,13 +588,14 @@ class vk
                 }
 
                 if (isset($product['description'])) {
-                    $description .= preg_replace("(\<(\/?[^>]+)>)", '', html_entity_decode($product['description'], ENT_QUOTES));
+//                    $description .= preg_replace("(\<(\/?[^>]+)>)", '', html_entity_decode($product['description'], ENT_QUOTES));
+                    $description .= html_entity_decode(strip_tags(html_entity_decode($product['description'])));
                 }
 
                 $data = array(
                     'owner_id' => (int)$this->oath['vk_oath_id_group'],
-                    'name' => html_entity_decode($product['name'], ENT_QUOTES),
-                    'description' => !empty($description) ? $description : $product['name'],
+                    'name' => html_entity_decode($product['name']),
+                    'description' => !empty($description) ? $description : html_entity_decode($product['name']),
                     'category_id' => (int)$this->settings['vk_settings_category-conformity'][$id_main_category],
                     'price' => $price,
                     'deleted' => $quantity > 0 ? 0 : 1,

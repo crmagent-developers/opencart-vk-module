@@ -389,7 +389,8 @@
                 $('#content > .container-fluid').prepend('<div class="alert alert-success"><i class="fa fa-exclamation-circle"></i> <?php echo $text_success_export_offer; ?></div>');
                 $('#export-offer').button('reset');
             },
-            error: function () {
+            error: function (e) {
+                console.log(e);
                 alert('error');
             }
         });
@@ -406,8 +407,9 @@
           $('#content > .container-fluid').prepend('<div class="alert alert-success"><i class="fa fa-exclamation-circle"></i> <?php echo $text_success_import_offer; ?></div>');
           $('#import-offer').button('reset');
         },
-        error: function () {
-          alert('error');
+        error: function (e) {
+            console.log(e);
+            alert('error');
         }
       });
     });
@@ -439,7 +441,8 @@
                 $('#vk-event-off').addClass('hidden').button('reset');
                 $('#vk-event-on').removeClass('hidden');
             },
-            error: function () {
+            error: function (e) {
+                console.log(e);
                 alert('error');
             }
         });
