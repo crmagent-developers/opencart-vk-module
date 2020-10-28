@@ -1,8 +1,8 @@
 <?php
 
 // Heading Goes here:
-$_['heading_title']    = 'Вконтакте';
-$_['module_title']     = 'Вконтакте';
+$_['heading_title']    = 'ВКонтакте';
+$_['module_title']     = 'ВКонтакте';
 
 // Страница авторизации
 $_['text_module']           = 'Модули';
@@ -30,10 +30,10 @@ $_['text_logs_tab']         = 'Логи';
 $_['text_status_legend']    = 'Установка соответствия справочников для статусов';
 $_['text_delivery_legend']  = 'Установка соответствия справочников для типов доставок';
 $_['text_default_legend']   = 'Установка значений по умолчанию';
-$_['text_vk_event_legend']  = 'События Вконтакте';
+$_['text_vk_event_legend']  = 'События ВКонтакте';
 $_['text_units_legend']     = 'Установка соответствий единиц измерения';
 
-$_['text_load_catalog']             = 'Список категорий для экспорта в Вконтакте';
+$_['text_load_catalog']             = 'Список категорий для экспорта в ВКонтакте';
 $_['text_list_product']             = 'Категории товаров';
 $_['text_vk_detail']                = 'Детали';
 $_['text_confirm_log']              = 'Вы уверены, что хотите очистить лог?';
@@ -42,12 +42,12 @@ $_['text_status_title']             = 'Статусы';
 $_['text_delivery_title']           = 'Способы доставки';
 $_['text_delivery_default_title']   = 'Тип доставки по умолчанию';
 $_['text_payment_default_title']    = 'Тип оплаты по умолчанию';
-$_['text_event_title']              = 'Подписаться на события группы в вконтакте';
+$_['text_event_title']              = 'Подписаться на события группы в ВКонтакте';
 $_['text_units_length_title']       = 'Единицы измерения длин';
 $_['text_units_weight_title']       = 'Единицы измерения весов';
 
-$_['text_not_delivery']             = 'Не подключена на стороне ВК';
-$_['text_not_unit']                 = 'Не заведена на стороне OpenCart';
+$_['text_not_delivery']             = 'Не выбрано';
+$_['text_not_unit']                 = 'Не выбрано';
 
 $_['text_error_log']                = 'Размер лога более 2MB';
 $_['text_error_delivery']           = 'Не найдены типы доставки';
