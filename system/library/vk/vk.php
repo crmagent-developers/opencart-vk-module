@@ -616,6 +616,8 @@ class vk
 
                     if ($image_id != false) {
                         $data['main_photo_id'] = $image_id;
+                    } else {
+                        $data['main_photo_id'] = (int)$this->getImageId('catalog/vk/no-photo.png', 'product_main_photo_id');
                     }
                 }
 
@@ -819,7 +821,6 @@ class vk
      */
     public function getOfferId($description)
     {
-
         if (is_string($description) && stripos($description, '________________________________________')) {
             $description = explode('________________________________________', $description);
             $descriptionOption = explode(PHP_EOL, $description[0]);

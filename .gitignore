@@ -3,6 +3,12 @@
 !.gitignore
 !README.md
 
+!image/
+/image/*
+!image/catalog/
+/image/catalog/*
+!image/catalog/vk/
+
 !catalog/
 /catalog/*
 !catalog/controller/
