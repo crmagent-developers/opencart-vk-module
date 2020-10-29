@@ -37,14 +37,28 @@
                   }
                 ?>
                 <legend><?php echo $text_vk_event_legend; ?></legend>
-                <div class="">
-                  <label class="col-sm-4 control-label"><?php echo $text_event_title; ?></label>
+                <div id="vk-event">
+                  <label class="col-sm-4 control-label"><?php echo $text_vk_event_title; ?></label>
                   <button type="button" id="vk-event-on" data-toggle="tooltip"
                           class="btn btn-primary <?php if($vk_event_status == 1){ echo 'hidden'; } ?>"
                           style="font-weight: bold"><?php echo $button_on; ?></button>
                   <button type="button" id="vk-event-off" data-toggle="tooltip"
                           class="btn btn-danger <?php if($vk_event_status == 0){ echo 'hidden'; } ?>"
                           style="font-weight: bold"><?php echo $button_off; ?></button>
+                </div>
+                <legend><?php echo $text_oc_event_legend; ?></legend>
+                <div id="oc-event">
+                  <label class="col-sm-4 control-label"><?php echo $text_oc_event_title; ?></label>
+                  <button type="button" id="oc-event-on" data-toggle="tooltip"
+                          class="btn btn-primary <?php if($oc_event_status == 1){ echo 'hidden'; } ?>"
+                          style="font-weight: bold"><?php echo $button_on; ?></button>
+                  <button type="button" id="oc-event-off" data-toggle="tooltip"
+                          class="btn btn-danger <?php if($oc_event_status == 0){ echo 'hidden'; } ?>"
+                          style="font-weight: bold"><?php echo $button_off; ?></button>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-6">
+                  <label class="control-label" style="text-align:left!important;color: indianred;"
+                         for="oc-event"><?php echo $text_oc_event_warning; ?></label>
                 </div>
               </fieldset>
             </div>
@@ -440,6 +454,40 @@
             complete: function () {
                 $('#vk-event-off').addClass('hidden').button('reset');
                 $('#vk-event-on').removeClass('hidden');
+            },
+            error: function (e) {
+                console.log(e);
+                alert('error');
+            }
+        });
+    });
+
+    $('#oc-event-on').on('click', function () {
+        $.ajax({
+            url: '<?php echo $catalog; ?>' + 'admin/index.php?route=extension/module/vk/subscribeToOcEvents&token=' + token,
+            beforeSend: function () {
+                $('#oc-event-on').button('loading');
+            },
+            complete: function () {
+                $('#oc-event-on').addClass('hidden').button('reset');
+                $('#oc-event-off').removeClass('hidden');
+            },
+            error: function (e) {
+                console.log(e);
+                alert('error');
+            }
+        });
+    });
+
+    $('#oc-event-off').on('click', function () {
+        $.ajax({
+            url: '<?php echo $catalog; ?>' + 'admin/index.php?route=extension/module/vk/unsubscribeToOcEvents&token=' + token,
+            beforeSend: function () {
+                $('#oc-event-off').button('loading');
+            },
+            complete: function () {
+                $('#oc-event-off').addClass('hidden').button('reset');
+                $('#oc-event-on').removeClass('hidden');
             },
             error: function (e) {
                 console.log(e);
