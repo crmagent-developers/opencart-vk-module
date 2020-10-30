@@ -66,7 +66,7 @@ class Orders
      */
     public function updateNewOrder($data)
     {
-        $this->db->query("UPDATE " . DB_PREFIX . "vk_orders SET " . DB_PREFIX . "id = '" . (int)$data[DB_PREFIX . 'id'] . "', " . DB_PREFIX . "status = '" . (int)$data[DB_PREFIX . 'status'] . "' WHERE vk_id = '" . (int)$data['vk_id'] . "'");
+        $this->db->query("UPDATE " . DB_PREFIX . "vk_orders SET " . DB_PREFIX . "id = '" . (int)$data[DB_PREFIX . 'id'] . "', " . DB_PREFIX . "status = '" . (int)$data[DB_PREFIX . 'status'] . "', date_modified = NOW() WHERE vk_id = '" . (int)$data['vk_id'] . "'");
     }
 
     /**
@@ -78,7 +78,7 @@ class Orders
      */
     public function editStatuses($vk_id, $vk_status, $oc_status)
     {
-        $this->db->query("UPDATE " . DB_PREFIX . "vk_orders SET vk_status = '" . (int)$vk_status . "', " . DB_PREFIX . "status = '" . (int)$oc_status . "' WHERE vk_id = '" . $vk_id . "'");
+        $this->db->query("UPDATE " . DB_PREFIX . "vk_orders SET vk_status = '" . (int)$vk_status . "', " . DB_PREFIX . "status = '" . (int)$oc_status . "', date_modified = NOW() WHERE vk_id = '" . $vk_id . "'");
     }
 
     /**
@@ -88,7 +88,7 @@ class Orders
      */
     public function set($data)
     {
-        $this->db->query("INSERT INTO " . DB_PREFIX . "vk_orders SET " . DB_PREFIX . "id = '" . (int)$data[DB_PREFIX . 'id'] . "', " . DB_PREFIX . "status = '" . (int)$data[DB_PREFIX . 'status'] . "', vk_id = '" . (int)$data['vk_id'] . "', vk_status = '" . (int)$data['vk_status'] . "', vk_user_id = '" . (int)$data['vk_user_id'] . "', json_last_event = '" . $this->db->escape(json_encode($data['json_last_event'], true)) . "'");
+        $this->db->query("INSERT INTO " . DB_PREFIX . "vk_orders SET " . DB_PREFIX . "id = '" . (int)$data[DB_PREFIX . 'id'] . "', " . DB_PREFIX . "status = '" . (int)$data[DB_PREFIX . 'status'] . "', vk_id = '" . (int)$data['vk_id'] . "', vk_status = '" . (int)$data['vk_status'] . "', vk_user_id = '" . (int)$data['vk_user_id'] . "', json_last_event = '" . $this->db->escape(json_encode($data['json_last_event'], true)) . "', date_added = NOW(), date_modified = NOW()");
     }
 
     /**

@@ -27,12 +27,7 @@ switch ($data['type']) {
         $query = $db->query("SELECT * FROM " . DB_PREFIX . "vk_orders WHERE vk_id = '" . (int)$data['object']['id'] . "'");
 
         if (!$query->row) {
-            $db->query(
-                "INSERT INTO " . DB_PREFIX . "vk_orders SET 
-                vk_id = '" . (int)$data['object']['id'] . "', 
-                vk_status = '" . (int)$data['object']['status'] . "', 
-                vk_user_id = '" . (int)$data['object']['user_id'] . "', 
-                json_last_event = '" . $db->escape(json_encode($data, true)) . "'");
+            $db->query("INSERT INTO " . DB_PREFIX . "vk_orders SET vk_id = '" . (int)$data['object']['id'] . "', vk_status = '" . (int)$data['object']['status'] . "', vk_user_id = '" . (int)$data['object']['user_id'] . "', json_last_event = '" . $db->escape(json_encode($data, true)) . "', date_added = NOW(), date_modified = NOW()");
 
             $cli_action = 'extension/module/vk/createOrder';
             require_once('dispatch.php');
@@ -46,8 +41,8 @@ switch ($data['type']) {
         $query = $db->query("SELECT * FROM " . DB_PREFIX . "vk_orders WHERE vk_id = '" . (int)$data['object']['id'] . "'");
 
             if ($query->row) {
-                $db->query("UPDATE " . DB_PREFIX . "vk_orders SET json_last_event = '" . $db->escape(json_encode($data, true)) . "' WHERE vk_id = '" . (int)$data['object']['id'] . "'");
-                $db->query("INSERT INTO " . DB_PREFIX . "vk_events SET order_vk_id = '" . (int)$data['object']['id'] . "'");
+                $db->query("UPDATE " . DB_PREFIX . "vk_orders SET json_last_event = '" . $db->escape(json_encode($data, true)) . "', date_modified = NOW() WHERE vk_id = '" . (int)$data['object']['id'] . "'");
+                $db->query("INSERT INTO " . DB_PREFIX . "vk_events SET order_vk_id = '" . (int)$data['object']['id'] . "', date_added = NOW(), date_modified = NOW()");
 
                 $cli_action = 'extension/module/vk/editOrder';
                 require_once('dispatch.php');

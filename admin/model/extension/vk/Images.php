@@ -45,7 +45,7 @@ class Images
      * @param array $data
      */
     public function set($data) {
-        $this->db->query("INSERT INTO " . DB_PREFIX . "vk_images SET `type` = '" . $data['type'] . "', " . DB_PREFIX . "source_id = '" . $data[DB_PREFIX . 'source_id'] . "', " . DB_PREFIX . "path = '" . $data[DB_PREFIX . 'path'] . "', vk_id = '" . (int)$data['vk_id'] . "', date_added = NOW()");
+        $this->db->query("INSERT INTO " . DB_PREFIX . "vk_images SET `type` = '" . $data['type'] . "', " . DB_PREFIX . "source_id = '" . $data[DB_PREFIX . 'source_id'] . "', " . DB_PREFIX . "path = '" . $data[DB_PREFIX . 'path'] . "', vk_id = '" . (int)$data['vk_id'] . "', date_added = NOW(), date_modified = NOW()");
     }
 
     /**

@@ -92,7 +92,7 @@ class Products
     public function set($data)
     {
         $this->db->query(
-            "INSERT INTO " . DB_PREFIX . "vk_products SET " . DB_PREFIX . "id = '" . $data[DB_PREFIX . 'id'] . "', vk_id = '" . (int)$data['vk_id'] . "', categories_albums = '" . $data['categories_albums'] . "', offer = '" . $data['offer'] . "'");
+            "INSERT INTO " . DB_PREFIX . "vk_products SET " . DB_PREFIX . "id = '" . $data[DB_PREFIX . 'id'] . "', vk_id = '" . (int)$data['vk_id'] . "', categories_albums = '" . $data['categories_albums'] . "', offer = '" . $data['offer'] . "', date_added = NOW(), date_modified = NOW()");
     }
 
     /**
@@ -103,7 +103,7 @@ class Products
     public function edit($data)
     {
         $this->db->query(
-            "UPDATE " . DB_PREFIX . "vk_products SET categories_albums = '" . $data['categories_albums'] . "' WHERE vk_id = '" . (int)$data['vk_id'] . "'");
+            "UPDATE " . DB_PREFIX . "vk_products SET categories_albums = '" . $data['categories_albums'] . "', date_modified = NOW() WHERE vk_id = '" . (int)$data['vk_id'] . "'");
     }
 
     /**

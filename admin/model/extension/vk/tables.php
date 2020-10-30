@@ -14,22 +14,22 @@ class ModelExtensionVkTables extends Model
      */
     public function createTables()
     {
-        $this->db->query("CREATE TABLE IF NOT EXISTS " . DB_PREFIX . "vk_images (`type` VARCHAR(255), " . DB_PREFIX . "source_id VARCHAR(255), " . DB_PREFIX . "path VARCHAR(255), vk_id INT(11), `date_added` datetime NOT NULL)");
+        $this->db->query("CREATE TABLE IF NOT EXISTS " . DB_PREFIX . "vk_images (`type` VARCHAR(255), " . DB_PREFIX . "source_id VARCHAR(255), " . DB_PREFIX . "path VARCHAR(255), vk_id INT(11), `date_added` datetime NOT NULL, `date_modified` datetime NOT NULL)");
         $this->db->query("ALTER TABLE " . DB_PREFIX . "vk_images CONVERT TO CHARACTER SET utf8;");
 
-        $this->db->query("CREATE TABLE IF NOT EXISTS " . DB_PREFIX . "vk_albums (" . DB_PREFIX . "id INT(11), " . DB_PREFIX . "parent_id INT(11), " . DB_PREFIX . "name VARCHAR(255), vk_id INT(11))");
+        $this->db->query("CREATE TABLE IF NOT EXISTS " . DB_PREFIX . "vk_albums (" . DB_PREFIX . "id INT(11), " . DB_PREFIX . "parent_id INT(11), " . DB_PREFIX . "name VARCHAR(255), vk_id INT(11), `date_added` datetime NOT NULL, `date_modified` datetime NOT NULL)");
         $this->db->query("ALTER TABLE " . DB_PREFIX . "vk_albums CONVERT TO CHARACTER SET utf8;");
 
-        $this->db->query("CREATE TABLE IF NOT EXISTS " . DB_PREFIX . "vk_products (" . DB_PREFIX . "id INT(11), vk_id INT(11), categories_albums TEXT, offer TEXT)");
+        $this->db->query("CREATE TABLE IF NOT EXISTS " . DB_PREFIX . "vk_products (" . DB_PREFIX . "id INT(11), vk_id INT(11), categories_albums TEXT, offer TEXT, `date_added` datetime NOT NULL, `date_modified` datetime NOT NULL)");
         $this->db->query("ALTER TABLE " . DB_PREFIX . "vk_products CONVERT TO CHARACTER SET utf8;");
 
-        $this->db->query("CREATE TABLE IF NOT EXISTS " . DB_PREFIX . "vk_orders (id INT(11) PRIMARY KEY AUTO_INCREMENT, " . DB_PREFIX . "id INT(11), " . DB_PREFIX . "status INT(11), vk_id INT(11), vk_status INT(11), vk_user_id INT(11), json_last_event MEDIUMTEXT)");
+        $this->db->query("CREATE TABLE IF NOT EXISTS " . DB_PREFIX . "vk_orders (id INT(11) PRIMARY KEY AUTO_INCREMENT, " . DB_PREFIX . "id INT(11), " . DB_PREFIX . "status INT(11), vk_id INT(11), vk_status INT(11), vk_user_id INT(11), json_last_event MEDIUMTEXT, `date_added` datetime NOT NULL, `date_modified` datetime NOT NULL)");
         $this->db->query("ALTER TABLE " . DB_PREFIX . "vk_orders CONVERT TO CHARACTER SET utf8;");
 
-        $this->db->query("CREATE TABLE IF NOT EXISTS " . DB_PREFIX . "vk_customers (" . DB_PREFIX . "id INT(11), vk_id INT(11))");
+        $this->db->query("CREATE TABLE IF NOT EXISTS " . DB_PREFIX . "vk_customers (" . DB_PREFIX . "id INT(11), vk_id INT(11), `date_added` datetime NOT NULL, `date_modified` datetime NOT NULL)");
         $this->db->query("ALTER TABLE " . DB_PREFIX . "vk_customers CONVERT TO CHARACTER SET utf8;");
 
-        $this->db->query("CREATE TABLE IF NOT EXISTS " . DB_PREFIX . "vk_events (id INT(11) PRIMARY KEY AUTO_INCREMENT, order_vk_id INT(11))");
+        $this->db->query("CREATE TABLE IF NOT EXISTS " . DB_PREFIX . "vk_events (id INT(11) PRIMARY KEY AUTO_INCREMENT, order_vk_id INT(11), `date_added` datetime NOT NULL, `date_modified` datetime NOT NULL)");
         $this->db->query("ALTER TABLE " . DB_PREFIX . "vk_events CONVERT TO CHARACTER SET utf8;");
     }
 

@@ -65,7 +65,7 @@ class Albums
      * @param array $data
      */
     public function set($data) {
-        $this->db->query("INSERT INTO " . DB_PREFIX . "vk_albums SET " . DB_PREFIX . "id = '" . $data[DB_PREFIX . 'id'] . "', " . DB_PREFIX . "parent_id = '" . $data[DB_PREFIX . 'parent_id'] . "', " . DB_PREFIX . "name = '" . $data[DB_PREFIX . 'name'] . "', vk_id = '" . (int)$data['vk_id'] . "'");
+        $this->db->query("INSERT INTO " . DB_PREFIX . "vk_albums SET " . DB_PREFIX . "id = '" . $data[DB_PREFIX . 'id'] . "', " . DB_PREFIX . "parent_id = '" . $data[DB_PREFIX . 'parent_id'] . "', " . DB_PREFIX . "name = '" . $data[DB_PREFIX . 'name'] . "', vk_id = '" . (int)$data['vk_id'] . "', date_added = NOW(), date_modified = NOW()");
     }
 
     /**
