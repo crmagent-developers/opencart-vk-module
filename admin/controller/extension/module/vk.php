@@ -50,7 +50,6 @@ class ControllerExtensionModuleVk extends Controller
      */
     public function install()
     {
-        $this->load->model('extension/event');
         $this->load->model('extension/vk/tables');
 
         $this->model_extension_vk_tables->createTables();
@@ -68,12 +67,6 @@ class ControllerExtensionModuleVk extends Controller
             array(
                 'vk_event_status' => 0
             )
-        );
-
-        $this->model_extension_event->addEvent(
-            'vk',
-            'catalog/model/checkout/order/addOrderHistory/after',
-            'extension/module/vk/editOrder'
         );
     }
 
@@ -199,8 +192,21 @@ class ControllerExtensionModuleVk extends Controller
 
             $this->response->setOutput($this->load->view('extension/module/vk_oAth', $_data));
         } else {
+            $this->load->model('extension/event');
+
+             $oc_events = $this->model_extension_event->getEvent(
+                'vk',
+                'catalog/model/checkout/order/addOrderHistory/after',
+                'extension/module/vk/editOrder');
+
+            if (isset($oc_events[0]['status'])) {
+                $_data['oc_event_status'] = $oc_events[0]['status'];
+            } else {
+                $_data['oc_event_status'] = 0;
+            }
+
             $_data['vk_event_status'] = $this->model_setting_setting->getSetting('vk_event')['vk_event_status'];
-            
+
             $this->access_token = $this->settings_oath['vk_oath_access_token'];
             $this->access_token_group = $this->settings_oath['vk_oath_access_token_group'];
 
@@ -225,6 +231,7 @@ class ControllerExtensionModuleVk extends Controller
             $_data['text_logs_tab']                 = $this->language->get('text_logs_tab');
             $_data['text_status_legend']            = $this->language->get('text_status_legend');
             $_data['text_vk_event_legend']          = $this->language->get('text_vk_event_legend');
+            $_data['text_oc_event_legend']          = $this->language->get('text_oc_event_legend');
             $_data['text_delivery_legend']          = $this->language->get('text_delivery_legend');
             $_data['text_default_legend']           = $this->language->get('text_default_legend');
             $_data['text_units_legend']             = $this->language->get('text_units_legend');
@@ -233,7 +240,8 @@ class ControllerExtensionModuleVk extends Controller
             $_data['text_vk_detail']                = $this->language->get('text_vk_detail');
             $_data['text_confirm_log']              = $this->language->get('text_confirm_log');
             $_data['text_status_title']             = $this->language->get('text_status_title');
-            $_data['text_event_title']              = $this->language->get('text_event_title');
+            $_data['text_vk_event_title']           = $this->language->get('text_vk_event_title');
+            $_data['text_oc_event_title']           = $this->language->get('text_oc_event_title');
             $_data['text_delivery_title']           = $this->language->get('text_delivery_title');
             $_data['text_delivery_default_title']   = $this->language->get('text_delivery_default_title');
             $_data['text_payment_default_title']    = $this->language->get('text_payment_default_title');
@@ -245,6 +253,7 @@ class ControllerExtensionModuleVk extends Controller
             $_data['text_error_delivery']           = $this->language->get('text_error_delivery');
             $_data['text_error_units_classes']      = $this->language->get('text_error_units_classes');
             $_data['text_error_log']                = $this->language->get('text_error_log');
+            $_data['text_oc_event_warning']         = $this->language->get('text_oc_event_warning');
 
             $_data['token']     = $this->session->data['token'];
             $_data['catalog']   = $this->request->server['HTTPS'] ? HTTPS_CATALOG : HTTP_CATALOG;
@@ -403,6 +412,20 @@ class ControllerExtensionModuleVk extends Controller
     }
 
     /**
+     * Edit order in vk from opencart by cron
+     */
+    public function updateOrders()
+    {
+        if (file_exists(DIR_APPLICATION . 'model/extension/vk/custom/send.php')) {
+            $this->load->model('extension/vk/custom/send');
+            $this->model_extension_vk_custom_send->updateOrders();
+        } else {
+            $this->load->model('extension/vk/send/send');
+            $this->model_extension_vk_send_send->updateOrders();
+        }
+    }
+
+    /**
      * Edit order in opencart from vk
      */
     public function editOrder()
@@ -420,6 +443,30 @@ class ControllerExtensionModuleVk extends Controller
         }
 
         $this->model_extension_vk_tables->events()->delete($vk_id);
+    }
+
+    /**
+     * Subscribe to OpenCart events
+     */
+    public function subscribeToOcEvents()
+    {
+        $this->load->model('extension/event');
+
+        $this->model_extension_event->addEvent(
+            'vk',
+            'catalog/model/checkout/order/addOrderHistory/after',
+            'extension/module/vk/editOrder'
+        );
+    }
+
+    /**
+     * Unsubscribe to OpenCart events
+     */
+    public function unsubscribeToOcEvents()
+    {
+        $this->load->model('extension/event');
+
+        $this->model_extension_event->deleteEvent('vk');
     }
 
     /**
@@ -470,7 +517,7 @@ class ControllerExtensionModuleVk extends Controller
     }
 
     /**
-     * Delete callback api server
+     * Unsubscribe to Vk events (Delete callback api server)
      */
     public function unsubscribeToVkEvents()
     {

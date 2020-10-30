@@ -79,6 +79,7 @@
 !system/
 /system/*
 !system/vk_events/
+!system/vk_cron/
 
 !system/library/
 /system/library/*
