@@ -14,8 +14,8 @@ class ModelExtensionVkTables extends Model
      */
     public function createTables()
     {
-//        $this->db->query("CREATE TABLE IF NOT EXISTS " . DB_PREFIX . "vk_images (" . DB_PREFIX . "path VARCHAR(255), vk_id INT(11))");
-//        $this->db->query("ALTER TABLE " . DB_PREFIX . "vk_images CONVERT TO CHARACTER SET utf8;");
+        $this->db->query("CREATE TABLE IF NOT EXISTS " . DB_PREFIX . "vk_images (`type` VARCHAR(255), " . DB_PREFIX . "source_id VARCHAR(255), " . DB_PREFIX . "path VARCHAR(255), vk_id INT(11), `date_added` datetime NOT NULL)");
+        $this->db->query("ALTER TABLE " . DB_PREFIX . "vk_images CONVERT TO CHARACTER SET utf8;");
 
         $this->db->query("CREATE TABLE IF NOT EXISTS " . DB_PREFIX . "vk_albums (" . DB_PREFIX . "id INT(11), " . DB_PREFIX . "parent_id INT(11), " . DB_PREFIX . "name VARCHAR(255), vk_id INT(11))");
         $this->db->query("ALTER TABLE " . DB_PREFIX . "vk_albums CONVERT TO CHARACTER SET utf8;");
@@ -38,7 +38,7 @@ class ModelExtensionVkTables extends Model
      */
     public function unsetTables()
     {
-//        $this->db->query("DROP TABLE " . DB_PREFIX . "vk_images");
+        $this->db->query("DROP TABLE " . DB_PREFIX . "vk_images");
         $this->db->query("DROP TABLE " . DB_PREFIX . "vk_albums");
         $this->db->query("DROP TABLE " . DB_PREFIX . "vk_products");
         $this->db->query("DROP TABLE " . DB_PREFIX . "vk_orders");

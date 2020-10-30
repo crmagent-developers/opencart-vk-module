@@ -125,7 +125,7 @@ class vk
             $data = [
                 'owner_id' => (int)$this->oath['vk_oath_id_group'],
                 'title' => htmlspecialchars_decode($categoryForExport['name']),
-                'photo_id' => !empty($categoryForExport['pathImage']) ? $this->getImageId($categoryForExport['pathImage'], 'album') : null
+                'photo_id' => !empty($categoryForExport['pathImage']) ? $this->getImageId($categoryForExport['pathImage'], $categoryForExport['category_id'], 'album') : null
 //                'main_album' => ''
             ];
 
@@ -204,7 +204,6 @@ class vk
         if (!empty($categoriesFromBase)) {
             foreach ($categoriesFromBase as $key => $categoryFromBase) {
                 if (!key_exists($categoryFromBase['vk_id'], $albumsFromVk)) {
-                    //                $this->tAlbums->delete($categoryFromBase[DB_PREFIX . 'id']);
                     $this->model_extension_vk_tables->albums()->delete($categoryFromBase[DB_PREFIX . 'id']);
 
                     unset($categoriesFromBase[$key]);
@@ -259,6 +258,7 @@ class vk
         ]);
 
         $this->model_extension_vk_tables->albums()->delete($category[DB_PREFIX . 'id'], $category[DB_PREFIX . 'parent_id']);
+        $this->model_extension_vk_tables->images()->delete($category[DB_PREFIX . 'id'], 'album');
     }
 
     /**
@@ -289,6 +289,7 @@ class vk
      * Get image id
      *
      * @param  string $pathImage
+     * @param  int $source_id
      * @param  string $flag
      *
      * @throws \VKApiException
@@ -298,14 +299,29 @@ class vk
      *
      * @return string|null
      */
-    private function getImageId($pathImage, $flag)
+    private function getImageId($pathImage, $source_id, $flag)
     {
+        $id = $this->checkImage($pathImage, $source_id, $flag);
+
+        if (isset($id)) {
+            file_put_contents(DIR_LOGS.'/test.log', $id, FILE_APPEND);
+
+            return $id;
+        }
+
         $upload_url = $this->getUploadUrl($flag);
         $request = $this->loadPhoto($upload_url, $pathImage);
         $photo = $this->saveImage($request, $flag);
 
         if ($photo != false) {
             $id = $this->getImageIdFromResult($photo);
+
+            $this->model_extension_vk_tables->images()->set([
+                'type' => $flag == 'album' ? 'album' : 'product',
+                DB_PREFIX . 'source_id' => $source_id,
+                DB_PREFIX . 'path' => $pathImage,
+                'vk_id' => $id
+            ]);
         }
 
         return isset($id) ? (int)$id : false;
@@ -338,12 +354,15 @@ class vk
      * Check if the picture has been loaded earlier
      *
      * @param $pathImage
+     * @param $source_id
+     * @param $type
      *
      * @return bool|string
      */
-    private function checkImage($pathImage)
+    private function checkImage($pathImage, $source_id, $type)
     {
-        $image = $this->model_extension_vk_tables->images()->get($pathImage);
+        $type = $type == 'album' ? $type : 'product';
+        $image = $this->model_extension_vk_tables->images()->get($pathImage, $source_id, $type);
 
         return !empty($image) ? $image['vk_id'] : null;
     }
@@ -451,33 +470,6 @@ class vk
 
         return $response;
     }
-
-//    /**
-//     * Writing photo to the database
-//     *
-//     * @param $photo
-//     * @param $pathImage
-//     *
-//     * @return string|null
-//     */
-//    private function putTableImages($photo, $pathImage)
-//    {
-//        $id = null;
-//
-//        if (is_array($photo)) {
-//
-//            foreach ($photo as $item) {
-//                $this->tImages->set([
-//                    DB_PREFIX . 'path' => $pathImage,
-//                    'vk_id' => $item['id']
-//                ]);
-//
-//                $id = $item['id'];
-//            }
-//        }
-//
-//        return $id;
-//    }
 
     /**
      * Writing album to the database
@@ -613,12 +605,12 @@ class vk
                 }
 
                 if (isset($product['image'])) {
-                    $image_id = (int)$this->getImageId($product['image'], 'product_main_photo_id');
+                    $image_id = (int)$this->getImageId($product['image'], $product['product_id'] . '*' . $offerId, 'product_main_photo_id');
 
                     if ($image_id != false) {
                         $data['main_photo_id'] = $image_id;
                     } else {
-                        $data['main_photo_id'] = (int)$this->getImageId('catalog/vk/no-photo.png', 'product_main_photo_id');
+                        $data['main_photo_id'] = (int)$this->getImageId('catalog/vk/no-photo.png', $product['product_id'] . '*' . $offerId, 'product_main_photo_id');
                     }
                 }
 
@@ -724,8 +716,9 @@ class vk
     /**
      * Delete product from base and vk
      *
-     * @param $vk_id
+     * @param $offers
      * @param $oc_id
+     *
      * @throws \VKApiException
      * @throws \VKApiMarketAlbumNotFoundException
      * @throws \VKClientException
@@ -737,6 +730,8 @@ class vk
                 'owner_id' => (int)$this->oath['vk_oath_id_group'],
                 'item_id' => (int)$offer['vk_id']
             ]);
+
+            $this->model_extension_vk_tables->images()->delete($oc_id . '*' . $offer['offer'], 'product');
         }
 
         $this->model_extension_vk_tables->products()->delete($oc_id);
