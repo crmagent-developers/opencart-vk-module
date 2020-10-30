@@ -528,6 +528,7 @@ class vk
             $id_main_category = $this->getMainCategory($product['category_id']);
             $link = $this->getLink($permalinks, $product['product_id'], $id_main_category);
             $newPrice = key_exists($product['product_id'], $shares) ? $shares[$product['product_id']]['price'] : null;
+            $oldPrice = null;
 
             $offers = $this->getOffers($product);
 
