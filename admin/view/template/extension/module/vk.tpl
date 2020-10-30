@@ -344,6 +344,7 @@
                     </div>
                   </div>
                 </div>
+                <!--
                 <div class="col-lg-offset-2">
                   <button type="submit" form="form-vk" data-toggle="tooltip" title="<?php echo $button_save; ?>"
                           class="btn btn-primary"
@@ -352,6 +353,7 @@
                           class="btn btn-success"
                           style="font-weight: bold"><?php echo $button_export_offer; ?></button>
                 </div>
+                -->
               </fieldset>
             </div>
             <div class="tab-pane" id="tab-logs">

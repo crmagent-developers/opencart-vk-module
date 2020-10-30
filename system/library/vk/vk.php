@@ -591,7 +591,7 @@ class vk
                     'description' => !empty($description) ? $description : html_entity_decode($product['name']),
                     'category_id' => (int)$this->settings['vk_settings_category-conformity'][$id_main_category],
                     'price' => $price,
-                    'deleted' => $quantity > 0 ? 0 : 1,
+//                    'deleted' => $quantity > 0 ? 0 : 1,
                     'url' => $link,
                     'dimension_width' => $product['width'] > 0 ? $this->getLength($product['width'], $product['length_class_id']) : null,
                     'dimension_height' => $product['height'] > 0 ? $this->getLength($product['height'], $product['length_class_id']) : null,
@@ -614,9 +614,19 @@ class vk
                     }
                 }
 
-                //Если такого варианта нет в вк, то создаем
-                if (!key_exists($offerId, $product['offers_vk'])) {
+                if ($quantity < 1) {
+                    if (!empty($product['offers_vk']) && key_exists($offerId, $product['offers_vk'])) {
+                        $this->deleteProduct($product['offers_vk'][$offerId]['vk_id'], $product['product_id'], $offerId);
 
+                        continue;
+                    } else {
+
+                        continue;
+                    }
+                }
+
+                //Если такого варианта нет в вк, то создаем
+                if (empty($product['offers_vk']) || !key_exists($offerId, $product['offers_vk'])) {
                     $result = $this->vkApiClient->market()->add($data);
                     $product_vk_id = isset($result['market_item_id']) ? $result['market_item_id'] : false;
 
@@ -626,7 +636,7 @@ class vk
                                 DB_PREFIX . 'id' => $product['product_id'],
                                 'vk_id' => $product_vk_id,
                                 'categories_albums' => json_encode($product['category_id']),
-                                'offer' => !empty($offerId) ? $offerId : 0
+                                'offer' => $offerId
                             )
                         );
                     }
@@ -714,7 +724,7 @@ class vk
     }
 
     /**
-     * Delete product from base and vk
+     * Delete offers from base and vk
      *
      * @param $offers
      * @param $oc_id
@@ -734,6 +744,28 @@ class vk
             $this->model_extension_vk_tables->images()->delete($oc_id . '*' . $offer['offer'], 'product');
         }
 
+        $this->model_extension_vk_tables->products()->delete($oc_id);
+    }
+
+    /**
+     * Delete offer from base and vk
+     *
+     * @param $vk_id
+     * @param $oc_id
+     * @param $offerId
+     *
+     * @throws \VKApiAccessMarketException
+     * @throws \VKApiException
+     * @throws \VKClientException
+     */
+    private function deleteProduct($vk_id, $oc_id, $offerId)
+    {
+        $this->vkApiClient->market()->delete([
+            'owner_id' => (int)$this->oath['vk_oath_id_group'],
+            'item_id' => (int)$vk_id
+        ]);
+
+        $this->model_extension_vk_tables->images()->delete($oc_id . '*' . $offerId, 'product');
         $this->model_extension_vk_tables->products()->delete($oc_id);
     }
 
