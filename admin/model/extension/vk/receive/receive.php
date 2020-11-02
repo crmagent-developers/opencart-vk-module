@@ -99,7 +99,21 @@ class ModelExtensionVkReceiveReceive extends ModelExtensionVkReceive
         $ocDelivery = $this->model_extension_vk_references->getOpercartDeliveryTypes();
         $ocPayments = $this->model_extension_vk_references->getOpercartPaymentTypes();
 
-        $address = $this->getAddress($orderFromVk['object']['delivery']);
+        if (isset($orderFromVk['object']['delivery']['type'])) {
+            $address = $this->getAddress($orderFromVk['object']['delivery']);
+
+            $delivery = $this->getDelivery(
+                $this->model_extension_vk_references->getVkDeliveryTypes(),
+                $orderFromVk['object']['delivery']['type']
+            );
+        } else {
+            $address = [
+                'address' => $orderFromVk['object']['delivery']['address']
+            ];
+
+            $delivery = $this->settings['vk_settings_delivery_default'];
+        }
+
         $customer = $this->getDataCustomer($orderFromVk, $address);
         $checkCustomer = $this->model_extension_vk_tables->customers()->get($orderFromVk['object']['user_id'], 'vk_id');
 
@@ -129,24 +143,24 @@ class ModelExtensionVkReceiveReceive extends ModelExtensionVkReceive
             $region['id'] = 0;
         }
 
-        $responseCountry = $this->getCountryByName($address['country']);
+        if (isset($address['country'])) {
+            $responseCountry = $this->getCountryByName($address['country']);
 
-        if (empty($responseCountry) && $address['country'] == 'Россия') {
-            $responseCountry = $this->getCountryByName('Российская Федерация');
-        }
+            if (empty($responseCountry) && $address['country'] == 'Россия') {
+                $responseCountry = $this->getCountryByName('Российская Федерация');
+            }
 
-        if ($responseCountry) {
-            $country['name'] = $responseCountry['name'];
-            $country['id'] = $responseCountry['country_id'];
+            if ($responseCountry) {
+                $country['name'] = $responseCountry['name'];
+                $country['id'] = $responseCountry['country_id'];
+            } else {
+                $country['name'] = $address['country'];
+                $country['id'] = 0;
+            }
         } else {
-            $country['name'] = $address['country'];
+            $country['name'] = '';
             $country['id'] = 0;
         }
-
-        $delivery = $this->getDelivery(
-            $this->model_extension_vk_references->getVkDeliveryTypes(),
-            $orderFromVk['object']['delivery']['type']
-        );
 
         $comment = 'Ссылка на страницу покупателя в вконтакте - https://vk.com/id' . $orderFromVk['object']['user_id'] . PHP_EOL .
             'Номер заказа в вконтакте - №' . $orderFromVk['object']['display_order_id'] . PHP_EOL;
@@ -178,12 +192,12 @@ class ModelExtensionVkReceiveReceive extends ModelExtensionVkReceive
         $data['payment_address']    = '0';
         $data['payment_firstname']  = $customer['firstname'];
         $data['payment_lastname']   = $customer['lastname'];
-        $data['payment_address_1']  = $address['address'];
+        $data['payment_address_1']  = isset($address['address']) ? $address['address'] : '';
         $data['payment_address_2']  = '';
         $data['payment_company']    = '';
         $data['payment_company_id'] = '';
-        $data['payment_city']       = $address['city'];
-        $data['payment_postcode']   = $address['postcode'];
+        $data['payment_city']       = isset($address['city']) ? $address['city'] : '';
+        $data['payment_postcode']   = isset($address['postcode']) ? $address['postcode'] : '';
         $data['payment_country_id'] = $country['id'];
         $data['payment_country']    = $country['name'];
         $data['payment_zone_id']    = $region['id'];
@@ -199,12 +213,12 @@ class ModelExtensionVkReceiveReceive extends ModelExtensionVkReceive
         $data['shipping_address']       = '0';
         $data['shipping_firstname']     = $customer['firstname'];
         $data['shipping_lastname']      = $customer['lastname'];
-        $data['shipping_address_1']     = $address['address'];
+        $data['shipping_address_1']     = isset($address['address']) ? $address['address'] : '';
         $data['shipping_address_2']     = '';
         $data['shipping_company']       = '';
         $data['shipping_company_id']    = '';
-        $data['shipping_city']          = $address['city'];
-        $data['shipping_postcode']      = $address['postcode'];
+        $data['shipping_city']          = isset($address['city']) ? $address['city'] : '';
+        $data['shipping_postcode']      = isset($address['postcode']) ? $address['postcode'] : '';
         $data['shipping']               = $delivery;
         $data['shipping_code']          = $delivery;
 
