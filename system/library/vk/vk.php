@@ -151,15 +151,17 @@ class vk
 
         $categoriesChecked = array();
 
-        foreach ($this->settings['vk_settings_category-list'] as $category_id) {
-            $category = $this->model_catalog_category->getCategory((int) $category_id);
+        if (isset($this->settings['vk_settings_category-list'])) {
+            foreach ($this->settings['vk_settings_category-list'] as $category_id) {
+                $category = $this->model_catalog_category->getCategory((int) $category_id);
 
-            $categoriesChecked[$category['category_id']] = array(
-                'category_id' => (int)$category['category_id'],
-                'parent_id' => (int)$category['parent_id'],
-                'name' => $category['name'],
-                'pathImage' => $category['image']
-            );
+                $categoriesChecked[$category['category_id']] = array(
+                    'category_id' => (int)$category['category_id'],
+                    'parent_id' => (int)$category['parent_id'],
+                    'name' => $category['name'],
+                    'pathImage' => $category['image']
+                );
+            }
         }
 
         return $this->checkCategories($categoriesChecked);
@@ -492,9 +494,10 @@ class vk
     /**
      * Adding products to a new category or updating products in an old category
      *
-     * @param $categories
+     * @param $inputArray
+     * @param $flag
      */
-    public function addProducts($categories)
+    public function addProducts($inputArray, $flag = 'categories')
     {
         $this->load->model('catalog/product');
         $this->load->model('catalog/option');
@@ -512,10 +515,16 @@ class vk
         $shares = $this->model_extension_vk_references->getShares();
         $permalinks = $this->model_extension_vk_references->getPermalinks();
 
-        $productsForExport = $this->getAllProducts($categories);
-        $productsForExport = $this->checkProducts($productsForExport);
+        if ($flag == 'categories') {
+            $productsForExport = $this->getAllProducts($inputArray);
+            $productsForExport = $this->checkProducts($productsForExport);
+        } else {
+            $productsForExport = $inputArray;
+        }
 
-        foreach ($productsForExport as $product) {
+        $createdGoods = 0;
+
+        foreach ($productsForExport as $key => $product) {
 
             $id_main_category = $this->getMainCategory($product['category_id']);
             $link = $this->getLink($permalinks, $product['product_id'], $id_main_category);
@@ -640,6 +649,8 @@ class vk
                             )
                         );
                     }
+
+                    $createdGoods++;
                 //Если есть, то обновляем
                 } else {
                     $data['item_id'] = $product['offers_vk'][$offerId]['vk_id'];
@@ -662,8 +673,22 @@ class vk
                         )
                     );
                 }
+
+                if ($createdGoods == 6999) {
+
+                    break;
+                }
             }
+
+            if ($createdGoods == 6999) {
+
+                break;
+            }
+
+            unset($productsForExport[$key]);
         }
+
+        file_put_contents(DIR_SYSTEM . '/vk_cron/products_for_export.json', json_encode($productsForExport));
     }
 
     /**

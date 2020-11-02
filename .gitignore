@@ -81,6 +81,10 @@
 !system/vk_events/
 !system/vk_cron/
 
+/system/vk_cron/category_setting.json
+/system/vk_cron/products_for_export.json
+/system/vk_cron/last_run.log
+
 !system/library/
 /system/library/*
 !system/library/vk/

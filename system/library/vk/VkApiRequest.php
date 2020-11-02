@@ -93,7 +93,7 @@ class VkApiRequest
             $this->logErrorApiClient($e);
         }
 
-        return $response_body;
+        return isset($response_body) ? $response_body : false;
     }
 
     /**

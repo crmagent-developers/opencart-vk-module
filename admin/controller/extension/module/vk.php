@@ -194,19 +194,6 @@ class ControllerExtensionModuleVk extends Controller
         } else {
             $this->load->model('extension/event');
 
-             $oc_events = $this->model_extension_event->getEvent(
-                'vk',
-                'catalog/model/checkout/order/addOrderHistory/after',
-                'extension/module/vk/editOrder');
-
-            if (isset($oc_events[0]['status'])) {
-                $_data['oc_event_status'] = $oc_events[0]['status'];
-            } else {
-                $_data['oc_event_status'] = 0;
-            }
-
-            $_data['vk_event_status'] = $this->model_setting_setting->getSetting('vk_event')['vk_event_status'];
-
             $this->access_token = $this->settings_oath['vk_oath_access_token'];
             $this->access_token_group = $this->settings_oath['vk_oath_access_token_group'];
 
@@ -261,6 +248,19 @@ class ControllerExtensionModuleVk extends Controller
             $_data['clear_vk']  = $this->url->link('extension/module/vk/clear_vk', 'token=' . $this->session->data['token'], true);
 
             $_data['saved_settings'] = $this->model_setting_setting->getSetting('vk_settings');
+
+            $oc_events = $this->model_extension_event->getEvent(
+                'vk',
+                'catalog/model/checkout/order/addOrderHistory/after',
+                'extension/module/vk/editOrder');
+
+            if (isset($oc_events[0]['status'])) {
+                $_data['oc_event_status'] = $oc_events[0]['status'];
+            } else {
+                $_data['oc_event_status'] = 0;
+            }
+
+            $_data['vk_event_status'] = $this->model_setting_setting->getSetting('vk_event')['vk_event_status'];
 
             if (isset($this->request->post['vk_code'])) {
                 $_data['vk_code'] = $this->request->post['vk_code'];
@@ -359,8 +359,54 @@ class ControllerExtensionModuleVk extends Controller
      */
     public function exportOffer()
     {
-        $categories = $this->vk->createAlbum();
-        $this->vk->addProducts($categories);
+        if ($this->checkModifiedCategoryList() || !$this->checkFileProductsForExport()) {
+            $categories = $this->vk->createAlbum();
+            $this->vk->addProducts($categories);
+        } else {
+            $this->vk->addProducts($this->checkFileProductsForExport(), 'products');
+        }
+    }
+
+    /**
+     * Check products for export from file
+     *
+     * @return array|bool|mixed
+     */
+    private function checkFileProductsForExport()
+    {
+        if (file_exists(DIR_SYSTEM . '/vk_cron/products_for_export.json')) {
+            $products = json_decode(file_get_contents(DIR_SYSTEM . '/vk_cron/products_for_export.json'), true);
+        } else {
+            $products = [];
+        }
+
+        return !empty($products) ? $products : false;
+    }
+
+    /**
+     * Have settings changed since the last export
+     *
+     * @return bool
+     */
+    private function checkModifiedCategoryList()
+    {
+        $this->load->model('setting/setting');
+
+        $settings = $this->model_setting_setting->getSetting('vk_settings');
+
+        $category_list_current = isset($settings['vk_settings_category-list']) ? $settings['vk_settings_category-list'] : array();
+
+        if (file_exists(DIR_SYSTEM . '/vk_cron/category_setting.json')) {
+            $category_list = json_decode(file_get_contents(DIR_SYSTEM . '/vk_cron/category_setting.json'), true);
+        }
+
+        if (!isset($category_list) || $category_list != $category_list_current) {
+            file_put_contents(DIR_SYSTEM . '/vk_cron/category_setting.json', json_encode($category_list_current));
+
+            return true;
+        }
+
+        return false;
     }
 
     /**
