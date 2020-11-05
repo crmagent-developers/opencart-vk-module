@@ -93,10 +93,16 @@ class VkApiRequest
             $response = $this->http_client->post($url, $params);
             $response_body = $this->parseResponse($response);
         } catch (TransportRequestException $e) {
-            $this->logger->write($e->getErrorCode() . ' - ' . $e->getErrorMessage(), 'vk', 'string');
+            $this->logger->write($e->getErrorCode() . ' - ' . $e->getErrorMessage(), 'vk_short', 'string');
+            $this->logger->write([
+                'error_code' => $e->getErrorCode(),
+                'error_message' => $e->getErrorMessage(),
+                'post_url' => $url,
+                'request_params' => $params
+            ], 'vk_detailed_logs');
             throw new \VKClientException($e);
         } catch (VKApiException $e) {
-            $this->logger->write($e->getErrorCode() . ' - ' . $e->getErrorMessage(), 'vk', 'string');
+            $this->logger->write($e->getErrorCode() . ' - ' . $e->getErrorMessage(), 'vk_short', 'string');
             $this->logger->write([
                 'error_code' => $e->getErrorCode(),
                 'error_message' => $e->getErrorMessage(),
@@ -125,10 +131,17 @@ class VkApiRequest
             $response = $this->http_client->upload($upload_url, $parameter_name, $path);
             $response_body = $this->parseResponse($response);
         } catch (TransportRequestException $e) {
-            $this->logger->write($e->getErrorCode() . ' - ' . $e->getErrorMessage(), 'vk', 'string');
+            $this->logger->write($e->getErrorCode() . ' - ' . $e->getErrorMessage(), 'vk_short', 'string');
+            $this->logger->write([
+                'error_code' => $e->getErrorCode(),
+                'error_message' => $e->getErrorMessage(),
+                'upload_url' => $upload_url,
+                'parameter_name' => $parameter_name,
+                'path' => $path
+            ], 'vk_detailed_logs');
             throw new \VKClientException($e);
         } catch (VKApiException $e) {
-            $this->logger->write($e->getErrorCode() . ' - ' . $e->getErrorMessage(), 'vk', 'string');
+            $this->logger->write($e->getErrorCode() . ' - ' . $e->getErrorMessage(), 'vk_short', 'string');
             $this->logger->write([
                 'error_code' => $e->getErrorCode(),
                 'error_message' => $e->getErrorMessage(),
@@ -139,7 +152,7 @@ class VkApiRequest
         }
 
         if (isset($response_body['error']) && is_string($response_body['error'])) {
-            $this->logger->write($response_body['error'], 'vk', 'string');
+            $this->logger->write($response_body['error'], 'vk_short', 'string');
             $this->logger->write([
                 'error' => $response_body['error'],
                 'upload_url' => $upload_url,

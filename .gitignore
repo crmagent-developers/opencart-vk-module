@@ -84,6 +84,7 @@
 /system/vk_cron/category_setting.json
 /system/vk_cron/products_for_export.json
 /system/vk_cron/last_run.log
+/system/vk_cron/test.php
 
 !system/library/
 /system/library/*

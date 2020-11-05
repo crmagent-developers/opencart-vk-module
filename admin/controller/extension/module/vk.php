@@ -96,6 +96,8 @@ class ControllerExtensionModuleVk extends Controller
         $this->model_setting_setting->deleteSetting('vk_settings');
         $this->model_setting_setting->deleteSetting('vk_event');
         $this->model_setting_setting->deleteSetting('vk_event_settings');
+
+        $this->deleteLogFiles();
     }
 
     public function index() {
@@ -274,7 +276,7 @@ class ControllerExtensionModuleVk extends Controller
                 $_data['vk_status'] = $this->config->get('vk_status');
             }
             
-            $logFile = $this->checkLogFile(DIR_LOGS . 'vk.log');
+            $logFile = $this->checkLogFile(DIR_LOGS . 'vk_short.log');
             
             if ($logFile !== false) {
                 $_data['logs']['vk_log'] = $logFile;
@@ -492,6 +494,24 @@ class ControllerExtensionModuleVk extends Controller
     }
 
     /**
+     * Delete logs
+     */
+    public function deleteLogFiles()
+    {
+        $files = glob(DIR_LOGS . "*" . ".log");
+
+        foreach ($files as $file) {
+
+            if (strripos($file, 'vk_short') !== false || strripos($file, 'vk_detailed_logs') !== false) {
+
+                if (is_writable($file)) {
+                    unlink($file);
+                }
+            }
+        }
+    }
+
+    /**
      * Subscribe to OpenCart events
      */
     public function subscribeToOcEvents()
@@ -638,7 +658,7 @@ class ControllerExtensionModuleVk extends Controller
     public function clear_vk()
     {
         if ($this->user->hasPermission('modify', 'extension/module/vk')) {
-            $file = DIR_LOGS . 'vk.log';
+            $file = DIR_LOGS . 'vk_short.log';
 
             $handle = fopen($file, 'w+');
 
