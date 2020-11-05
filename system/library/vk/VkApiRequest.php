@@ -35,6 +35,11 @@ class VkApiRequest
     private $language;
 
     /**
+     * @var Logger
+     */
+    private $logger;
+
+    /**
      * VkApiRequest constructor.
      *
      * @param $access_token_user
@@ -44,6 +49,7 @@ class VkApiRequest
      * @param $host
      */
     public function __construct($access_token_user, $access_token_group, $api_version, $language, $host) {
+        $this->logger = new \Logger();
         $this->http_client = new \VkHttpClient(10);
         $this->version = $api_version;
         $this->host = $host;
@@ -87,10 +93,16 @@ class VkApiRequest
             $response = $this->http_client->post($url, $params);
             $response_body = $this->parseResponse($response);
         } catch (TransportRequestException $e) {
-            $this->logErrorHttpClient($e);
+            $this->logger->write($e->getErrorCode() . ' - ' . $e->getErrorMessage(), 'vk', 'string');
             throw new \VKClientException($e);
         } catch (VKApiException $e) {
-            $this->logErrorApiClient($e);
+            $this->logger->write($e->getErrorCode() . ' - ' . $e->getErrorMessage(), 'vk', 'string');
+            $this->logger->write([
+                'error_code' => $e->getErrorCode(),
+                'error_message' => $e->getErrorMessage(),
+                'post_url' => $url,
+                'request_params' => $params
+            ], 'vk_detailed_logs');
         }
 
         return isset($response_body) ? $response_body : false;
@@ -113,115 +125,32 @@ class VkApiRequest
             $response = $this->http_client->upload($upload_url, $parameter_name, $path);
             $response_body = $this->parseResponse($response);
         } catch (TransportRequestException $e) {
-            $this->logErrorHttpClient($e);
+            $this->logger->write($e->getErrorCode() . ' - ' . $e->getErrorMessage(), 'vk', 'string');
             throw new \VKClientException($e);
         } catch (VKApiException $e) {
-            $this->logErrorApiClient($e);
+            $this->logger->write($e->getErrorCode() . ' - ' . $e->getErrorMessage(), 'vk', 'string');
+            $this->logger->write([
+                'error_code' => $e->getErrorCode(),
+                'error_message' => $e->getErrorMessage(),
+                'upload_url' => $upload_url,
+                'parameter_name' => $parameter_name,
+                'path' => $path
+            ], 'vk_detailed_logs');
         }
 
         if (isset($response_body['error']) && is_string($response_body['error'])) {
-            $this->logErrorApiClientString($response_body['error'], $path);
+            $this->logger->write($response_body['error'], 'vk', 'string');
+            $this->logger->write([
+                'error' => $response_body['error'],
+                'upload_url' => $upload_url,
+                'parameter_name' => $parameter_name,
+                'path' => $path
+            ], 'vk_detailed_logs');
 
             return null;
         }
 
         return $response_body;
-    }
-
-    /**
-     * Error recording from VK Api client
-     *
-     * @param $error
-     * @param $path
-     */
-    private function logErrorApiClientString($error, $path)
-    {
-        $date = date('Y.m.d H:m:s');
-        $str = sprintf("[%s] - %s \r\n",
-            $date,
-            $error
-        );
-
-        file_put_contents(DIR_LOGS . 'vk.log', $str, FILE_APPEND);
-
-        # Запись подробных логов
-        $this->checkFileSize();
-        $str_detail = $str . "\t" . $path . "\r\n\r\n";
-        file_put_contents(DIR_LOGS . 'vk_detailed_logs.log', $str_detail, FILE_APPEND);
-    }
-
-    /**
-     * Error recording from http client
-     *
-     * @param $e
-     */
-    private function logErrorHttpClient($e)
-    {
-        $date = date('Y.m.d H:m:s');
-        $str = sprintf("[%s] - %s - %s \r\n",
-            $date,
-            $e->getCode(),
-            $e->getMessage()
-        );
-
-        file_put_contents(DIR_LOGS . 'vk.log', $str, FILE_APPEND);
-    }
-
-    /**
-     * Error recording from VK Api client
-     *
-     * @param $e
-     */
-    private function logErrorApiClient($e)
-    {
-        $date = date('Y.m.d H:m:s');
-        $str = sprintf("[%s] - %s - %s \r\n",
-            $date,
-            $e->getErrorCode(),
-            $e->getErrorMessage()
-        );
-
-        file_put_contents(DIR_LOGS . 'vk.log', $str, FILE_APPEND);
-
-        # Запись подробных логов
-        $this->checkFileSize();
-        $str_detail = $str . "\t" . $this->getDetails($e->getError()->getRequestParams()) . "\r\n";
-        file_put_contents(DIR_LOGS . 'vk_detailed_logs.log', $str_detail, FILE_APPEND);
-    }
-
-    /**
-     * Get details from error
-     *
-     * @param $error
-     *
-     * @return string
-     */
-    private function getDetails($requestParams)
-    {
-        $detail = '';
-
-        if (is_array($requestParams) && isset($requestParams)) {
-            foreach ($requestParams as $param) {
-                $detail .= $param['key'] . ' - ' . $param['value'] . "\r\n\t";
-            }
-        }
-
-        return $detail;
-    }
-
-    /**
-     * Clear vk log detail file
-     *
-     * @return void
-     */
-    private function checkFileSize()
-    {
-        if (file_exists(DIR_LOGS . 'vk_detailed_logs.log') && filesize(DIR_LOGS . 'vk_detailed_logs.log') > 10000000) {
-            file_put_contents(DIR_LOGS . 'vk_detailed_logs_' . date('Y-m-d') . '.log', file_get_contents(DIR_LOGS . 'vk_detailed_logs.log'));
-            $handle = fopen(DIR_LOGS . 'vk_detailed_logs.log', 'w+');
-
-            fclose($handle);
-        }
     }
 
     /**

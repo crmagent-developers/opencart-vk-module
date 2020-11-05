@@ -18,6 +18,11 @@ class vk
     protected $vkApiClient;
 
     /**
+     * @var \Logger
+     */
+    protected $logger;
+
+    /**
      * @var array
      */
     protected $settings;
@@ -53,6 +58,7 @@ class vk
         $this->load->model('extension/vk/tables');
 
         $this->vkApiClient = $this->getApiClient();
+        $this->logger = $this->getLogger();
         $this->settings = $this->model_setting_setting->getSetting('vk_settings');
         $this->oath = $this->model_setting_setting->getSetting('vk_oath');
     }
@@ -103,6 +109,19 @@ class vk
      */
     public function getOcApiClient($registry) {
         return new \OpencartApiClient($registry);
+    }
+
+    /**
+     * Get Logger
+     *
+     * @param string $logPath
+     * @param int $files
+     *
+     * @return \Logger
+     */
+    public function getLogger(/*$logPath = DIR_LOGS, $files = 10*/)
+    {
+        return new \Logger(/*$logPath, $files*/);
     }
 
     /**
@@ -306,7 +325,6 @@ class vk
         $id = $this->checkImage($pathImage, $source_id, $flag);
 
         if (isset($id)) {
-            file_put_contents(DIR_LOGS.'/test.log', $id, FILE_APPEND);
 
             return $id;
         }
