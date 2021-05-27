@@ -2,6 +2,9 @@
 
 class ControllerExtensionModuleVk extends Controller
 {
+    const VK_DB_VERSION = '1.0';
+    const VK_MODULE_VERSION = '1.0';
+
     /**
      * @var array
      */
@@ -58,7 +61,10 @@ class ControllerExtensionModuleVk extends Controller
             'vk',
             array(
                 'vk_status' => 1,
-                'vk_country' => array($this->config->get('config_country_id'))
+                'vk_country' => array($this->config->get('config_country_id')),
+                'vk_db_version' => self::VK_DB_VERSION,
+                'vk_module_version' => self::VK_MODULE_VERSION,
+                'vk_statistic' => 0
             )
         );
 
@@ -79,6 +85,13 @@ class ControllerExtensionModuleVk extends Controller
     {
         $this->load->model('extension/event');
         $this->load->model('extension/vk/tables');
+
+        $this->pushStatistic([
+            'shopUrl' => HTTP_CATALOG,
+            'groupId' => ltrim($this->settings_oath['vk_oath_id_group'], '-'),
+            'version' => self::VK_MODULE_VERSION,
+            'isActive' => false
+        ]);
 
         $settings = [
             'vk_event' => $this->model_setting_setting->getSetting('vk_event')
@@ -198,6 +211,27 @@ class ControllerExtensionModuleVk extends Controller
 
             $this->access_token = $this->settings_oath['vk_oath_access_token'];
             $this->access_token_group = $this->settings_oath['vk_oath_access_token_group'];
+
+            # Отправить статистику
+            if (!empty($this->settings_oath['vk_oath_id_group'])
+                && (empty($this->model_setting_setting->getSetting('vk')['vk_statistic'])
+                    || self::VK_MODULE_VERSION != $this->model_setting_setting->getSetting('vk')['vk_module_version'])
+            ) {
+                $statistic = $this->pushStatistic([
+                    'shopUrl' => HTTP_CATALOG,
+                    'groupId' => ltrim($this->settings_oath['vk_oath_id_group'], '-'),
+                    'version' => self::VK_MODULE_VERSION,
+                    'isActive' => true
+                ]);
+
+                $this->model_setting_setting->editSetting(
+                    'vk',
+                    array(
+                        'vk_module_version' => self::VK_MODULE_VERSION,
+                        'vk_statistic' => $statistic
+                    )
+                );
+            }
 
             # Обработка изменений в настройках модуля
             if ($this->request->server['REQUEST_METHOD'] == 'POST'/* && $this->validate()*/) {
@@ -666,5 +700,33 @@ class ControllerExtensionModuleVk extends Controller
         }
 
         $this->response->redirect($this->url->link('extension/module/vk', 'token=' . $this->session->data['token'], true));
+    }
+
+    /**
+     * Send statistics about module activation/deactivation
+     *
+     * @param $data
+     *
+     * @return string
+     */
+    private function pushStatistic($data)
+    {
+        $data['platform'] = 'opencart';
+
+        $ch = curl_init();
+
+        $setopt = [
+            CURLOPT_URL => 'https://dev.crmagent.ru/vk/push',
+            CURLOPT_RETURNTRANSFER => 1,
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => json_encode($data),
+        ];
+
+        curl_setopt_array($ch, $setopt);
+        $response = curl_exec($ch);
+
+        curl_close($ch);
+
+        return $response;
     }
 }
