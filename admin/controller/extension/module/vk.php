@@ -120,6 +120,8 @@ class ControllerExtensionModuleVk extends Controller
         $this->document->addScript('/admin/view/javascript/vk.js');
         $this->document->addStyle('/admin/view/stylesheet/vk.css');
 
+        $settings_vk = $this->model_setting_setting->getSetting('vk');
+
         $this->document->setTitle($this->language->get('heading_title'));
         $_data['heading_title'] = $this->language->get('heading_title');
         $_data['header']        = $this->load->controller('common/header');
@@ -214,8 +216,13 @@ class ControllerExtensionModuleVk extends Controller
 
             # Отправить статистику
             if (!empty($this->settings_oath['vk_oath_id_group'])
-                && (empty($this->model_setting_setting->getSetting('vk')['vk_statistic'])
-                    || self::VK_MODULE_VERSION != $this->model_setting_setting->getSetting('vk')['vk_module_version'])
+                && (
+                    empty($settings_vk['vk_statistic'])
+                    || (
+                        isset($settings_vk['vk_module_version'])
+                        && self::VK_MODULE_VERSION != $settings_vk['vk_module_version']
+                    )
+                )
             ) {
                 $statistic = $this->pushStatistic([
                     'shopUrl' => HTTP_CATALOG,
@@ -703,7 +710,7 @@ class ControllerExtensionModuleVk extends Controller
     }
 
     /**
-     * Send statistics about module activation/deactivation
+     * Request for sending statistics
      *
      * @param $data
      *
