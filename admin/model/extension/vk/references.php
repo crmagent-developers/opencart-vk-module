@@ -71,6 +71,7 @@ class ModelExtensionVkReferences extends Model
     private function getOpercartCategories()
     {
         $this->load->model('catalog/category');
+        $this->load->model('catalog/product');
 
         $categories = $this->model_catalog_category->getCategories(['sort' => 'name']);
 
