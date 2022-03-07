@@ -4,7 +4,8 @@
     <div class="container-fluid">
       <div class="pull-right">
         <button type="button" id="import-offer" data-toggle="tooltip" title="{{ button_import_offer }}"
-                class="btn btn-success btn-size" style="margin-right: 20px"><i class="fa fa-arrow-circle-down"></i></button>
+                class="btn btn-success btn-size" style="margin-right: 20px"><i
+                  class="fa fa-arrow-circle-down"></i></button>
         <button type="submit" form="form-vk" data-toggle="tooltip" title="{{ button_save }}"
                 class="btn btn-primary btn-size"><i class="fa fa-save"></i></button>
         <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}"
@@ -70,7 +71,8 @@
                     {% for code, name in statuses.vk %}
                       <div class="row vk_unit">
                         <div class="col-lg-4 col-md-6 col-sm-6">
-                          <select id="vk_settings_status_{{ code }}" name="vk_settings_status[{{ code }}]"
+                          <select id="vk_settings_status_{{ code }}"
+                                  name="vk_settings_status[{{ code }}]"
                                   class="form-control">
                             {% for status in statuses.opencart %}
                               <option value="{{ status.order_status_id }}"
@@ -94,13 +96,14 @@
                   <label class="col-sm-2 control-label">{{ text_delivery_title }}</label>
                   <div class="col-sm-10">
                     <div class="row">
-                      {% if  delivery.opencart  %}
+                      {% if  delivery.opencart %}
                         {% for code, title in delivery.vk %}
                           <div class="col-sm-12" style="margin-bottom:10px;">
                             <div class="row vk_unit">
                               <div class="col-lg-4 col-md-6 col-sm-6">
                                 <select id="vk_settings_delivery_{{ code }}"
-                                        name="vk_settings_delivery[{{ code }}]" class="form-control">
+                                        name="vk_settings_delivery[{{ code }}]"
+                                        class="form-control">
                                   <option value="not_delivery"
                                           {% if saved_settings.vk_settings_delivery.code  and  'not_delivery' == saved_settings.vk_settings_delivery.code %}
                                     selected="selected"{% endif %}>
@@ -123,7 +126,8 @@
                                 </select>
                               </div>
                               <div class="col-lg-4 col-md-6 col-sm-6">
-                                <label class="control-label" style="text-align:left!important;"
+                                <label class="control-label"
+                                       style="text-align:left!important;"
                                        for="vk_settings_delivery_{{ code }}">{{ title }}</label>
                               </div>
                             </div>
@@ -131,7 +135,8 @@
                         {% endfor %}
                       {% else %}
                         <div class="alert alert-info"><i class="fa fa-exclamation-circle"></i>
-                          <button type="button" class="close" data-dismiss="alert">&times;</button>
+                          <button type="button" class="close" data-dismiss="alert">&times;
+                          </button>
                           {{ text_error_delivery }}
                         </div>
                       {% endif %}
@@ -143,13 +148,14 @@
                   <label class="col-sm-2 control-label">{{ text_units_length_title }}</label>
                   <div class="col-sm-10">
                     <div class="row">
-                      {% if  length_classes.opencart  %}
+                      {% if  length_classes.opencart %}
                         {% for lengthUnit, lengthFactor in length_classes.vk %}
                           <div class="col-sm-12" style="margin-bottom:10px;">
                             <div class="row vk_unit">
                               <div class="col-lg-4 col-md-6 col-sm-6">
                                 <select id="vk_settings_length_{{ lengthUnit }}"
-                                        name="vk_settings_length[{{ lengthUnit }}]" class="form-control">
+                                        name="vk_settings_length[{{ lengthUnit }}]"
+                                        class="form-control">
 
                                   <option value="not_unit"
                                           {% if saved_settings.vk_settings_length[lengthUnit]  and  'not_unit' == saved_settings.vk_settings_length[lengthUnit] %}
@@ -168,7 +174,8 @@
                                 </select>
                               </div>
                               <div class="col-lg-4 col-md-6 col-sm-6">
-                                <label class="control-label" style="text-align:left!important;"
+                                <label class="control-label"
+                                       style="text-align:left!important;"
                                        for="vk_settings_length_{{ lengthUnit }}">{{ units_title[lengthUnit] }}</label>
                               </div>
                             </div>
@@ -176,7 +183,8 @@
                         {% endfor %}
                       {% else %}
                         <div class="alert alert-info"><i class="fa fa-exclamation-circle"></i>
-                          <button type="button" class="close" data-dismiss="alert">&times;</button>
+                          <button type="button" class="close" data-dismiss="alert">&times;
+                          </button>
                           {{ text_error_units_classes }}
                         </div>
                       {% endif %}
@@ -185,13 +193,14 @@
                   <label class="col-sm-2 control-label">{{ text_units_weight_title }}</label>
                   <div class="col-sm-10">
                     <div class="row">
-                      {% if  weight_classes.opencart  %}
+                      {% if  weight_classes.opencart %}
                         {% for weightUnit, weightFactor in weight_classes.vk %}
                           <div class="col-sm-12" style="margin-bottom:10px;">
                             <div class="row vk_unit">
                               <div class="col-lg-4 col-md-6 col-sm-6">
                                 <select id="vk_settings_weight_{{ weightUnit }}"
-                                        name="vk_settings_weight[{{ weightUnit }}]" class="form-control">
+                                        name="vk_settings_weight[{{ weightUnit }}]"
+                                        class="form-control">
                                   <option value="not_unit"
                                           {% if saved_settings.vk_settings_weight[weightUnit]  and  'not_unit' == saved_settings.vk_settings_weight[weightUnit] %}
                                     selected="selected"{% endif %}>
@@ -207,7 +216,8 @@
                                 </select>
                               </div>
                               <div class="col-lg-4 col-md-6 col-sm-6">
-                                <label class="control-label" style="text-align:left!important;"
+                                <label class="control-label"
+                                       style="text-align:left!important;"
                                        for="vk_settings_weight_{{ weightUnit }}">{{ units_title[weightUnit] }}</label>
                               </div>
                             </div>
@@ -215,7 +225,8 @@
                         {% endfor %}
                       {% else %}
                         <div class="alert alert-info"><i class="fa fa-exclamation-circle"></i>
-                          <button type="button" class="close" data-dismiss="alert">&times;</button>
+                          <button type="button" class="close" data-dismiss="alert">&times;
+                          </button>
                           {{ text_error_units_classes }}
                         </div>
                       {% endif %}
@@ -227,12 +238,13 @@
                   <label class="col-sm-2 control-label"></label>
                   <div class="col-sm-10">
                     <div class="row">
-                      {% if  delivery.opencart  %}
+                      {% if  delivery.opencart %}
                         <div class="col-sm-12" style="margin-bottom:10px;">
                           <div class="row vk_unit">
                             <div class="col-lg-4 col-md-6 col-sm-6">
                               <select id="vk_settings_delivery_default"
-                                      name="vk_settings_delivery_default" class="form-control">
+                                      name="vk_settings_delivery_default"
+                                      class="form-control">
                                 {% for value in delivery.opencart %}
                                   {% for key,val in value %}
                                     {% set code_oc = key %}
@@ -247,14 +259,16 @@
                               </select>
                             </div>
                             <div class="col-lg-4 col-md-6 col-sm-6">
-                              <label class="control-label" style="text-align:left!important;"
+                              <label class="control-label"
+                                     style="text-align:left!important;"
                                      for="vk_settings_delivery_default">{{ text_delivery_default_title }}</label>
                             </div>
                           </div>
                         </div>
                       {% else %}
                         <div class="alert alert-info"><i class="fa fa-exclamation-circle"></i>
-                          <button type="button" class="close" data-dismiss="alert">&times;</button>
+                          <button type="button" class="close" data-dismiss="alert">&times;
+                          </button>
                           {{ text_error_delivery }}
                         </div>
                       {% endif %}
@@ -263,12 +277,13 @@
                   <label class="col-sm-2 control-label"></label>
                   <div class="col-sm-10">
                     <div class="row">
-                      {% if  payments.opencart  %}
+                      {% if  payments.opencart %}
                         <div class="col-sm-12" style="margin-bottom:10px;">
                           <div class="row vk_unit">
                             <div class="col-lg-4 col-md-6 col-sm-6">
                               <select id="vk_settings_payment_default"
-                                      name="vk_settings_payment_default" class="form-control">
+                                      name="vk_settings_payment_default"
+                                      class="form-control">
                                 {% for code_oc, title_oc in payments.opencart %}
                                   <option value="{{ code_oc }}"
                                           {% if saved_settings.vk_settings_payment_default  and  code_oc == saved_settings.vk_settings_payment_default %}
@@ -279,14 +294,16 @@
                               </select>
                             </div>
                             <div class="col-lg-4 col-md-6 col-sm-6">
-                              <label class="control-label" style="text-align:left!important;"
+                              <label class="control-label"
+                                     style="text-align:left!important;"
                                      for="vk_settings_payment_default">{{ text_payment_default_title }}</label>
                             </div>
                           </div>
                         </div>
                       {% else %}
                         <div class="alert alert-info"><i class="fa fa-exclamation-circle"></i>
-                          <button type="button" class="close" data-dismiss="alert">&times;</button>
+                          <button type="button" class="close" data-dismiss="alert">&times;
+                          </button>
                           {{ text_error_payment }}
                         </div>
                       {% endif %}
@@ -309,7 +326,7 @@
                             <input type="checkbox" name="vk_settings_category-list[]"
                                    value="{{ category.category_id }}"
                                     {% if (saved_settings['vk_settings_category-list'] is defined and category['category_id'] in saved_settings['vk_settings_category-list']) %}
-                                      {{ 'checked' }}
+                                      checked="checked"
                                     {% endif %}
                             >
                             {{ category.name }}
@@ -320,15 +337,16 @@
                                     name="vk_settings_category-conformity[{{ category.category_id }}]">
                               {% for vk_section in categories.vk %}
                                 <option value="{{ vk_section.id }}" disabled>
-                                  {{ vk_section.name}}
+                                  {{ vk_section.name }}
                                 </option>
                                 {% for vk_category in vk_section.categories %}
+
                                   <option value="{{ vk_category.id }}"
-                                          {% if saved_settings.vk_settings_category-conformity.category.category_id  and  vk_category.id == saved_settings.vk_settings_category-conformity.category.category_id  %}
+                                          {% if saved_settings['vk_settings_category-conformity'][category.category_id] is defined  and  (vk_category.id == saved_settings['vk_settings_category-conformity'][category.category_id]) %}
                                             selected="selected"
                                           {% endif %}
                                   >
-                                    &mdash; {{ vk_category.name}}
+                                    &mdash; {{ vk_category.name }}
                                   </option>
                                 {% endfor %}
                               {% endfor %}
@@ -358,19 +376,20 @@
                 <div class="vk_unit">
                   <a onclick="confirm('{{ text_confirm_log }}') ? location.href='{{ clear_vk }}' : false;"
                      data-toggle="tooltip" title="{{ button_clear }}" class="btn btn-danger"><i
-                            class="fa fa-eraser"></i> <span class="hidden-xs">{{ button_clear }}</span></a>
-                  {% if logs.vk_detail != ''  %}
+                            class="fa fa-eraser"></i> <span
+                            class="hidden-xs">{{ button_clear }}</span></a>
+                  {% if logs.vk_detail != '' %}
                     <a href="{{ logs.vk_detail }}" class="btn btn-success">{{ text_vk_detail }}</a>
                   {% endif %}
                 </div>
-                {% if  logs.vk_log  %}
+                {% if  logs.vk_log %}
                   <div class="row">
                     <div class="col-sm-12">
                     <textarea wrap="off" rows="15" readonly
                               class="form-control">{{ logs.vk_log }}</textarea>
                     </div>
                   </div>
-                {% elseif  logs.vk_error  %}
+                {% elseif  logs.vk_error %}
                   <div class="alert alert-danger alert-dismissible"><i
                             class="fa fa-exclamation-circle"></i> {{ logs.vk_error }}
                     <button type="button" class="close" data-dismiss="alert">&times;</button>

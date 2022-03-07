@@ -162,7 +162,17 @@ class ModelExtensionVkReferences extends Model
     {
         $links = array();
 
-        $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "url_alias");
+        $sql = "SELECT * FROM " . DB_PREFIX . "url_alias";
+        $sql .= " AND (query LIKE 'category_id=%' OR query LIKE 'product_id=%')";
+
+        if (version_compare(VERSION, '3.0', '>=')) {
+            $sql = "SELECT * FROM " . DB_PREFIX . "seo_url";
+            $sql .= " WHERE store_id = " . (int)$this->config->get('store_id');
+            $sql .= " AND language_id = " . (int)$this->config->get('language_id');
+            $sql .= " AND (query LIKE 'category_id=%' OR query LIKE 'product_id=%')";
+        }
+
+        $query = $this->db->query($sql);
 
         foreach ($query->rows as $row) {
 
