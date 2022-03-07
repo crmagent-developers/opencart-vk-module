@@ -119,7 +119,7 @@ class ControllerExtensionModuleVk extends Controller
 
         if (version_compare(VERSION, '3.0', '>')) {
             $this->load->model('setting/event');
-            $this->model_setting_event->deleteEvent('vk');
+            $this->model_setting_event->deleteEventByCode('vk');
         } else {
             $this->load->model('extension/event');
             $this->model_extension_event->deleteEvent('vk');
@@ -317,10 +317,7 @@ class ControllerExtensionModuleVk extends Controller
 
             if (version_compare(VERSION, '3.0', '>')) {
                 $this->load->model('setting/event');
-                $oc_events = $this->model_setting_event->getEvent(
-                    'vk',
-                    'catalog/model/checkout/order/addOrderHistory/after',
-                    'extension/module/vk/editOrder');
+                $oc_events = [$this->model_setting_event->getEventByCode('vk')];
             } else {
                 $this->load->model('extension/event');
                 $oc_events = $this->model_extension_event->getEvent(
@@ -593,7 +590,7 @@ class ControllerExtensionModuleVk extends Controller
     {
         if (version_compare(VERSION, '3.0', '>')) {
             $this->load->model('setting/event');
-
+            $this->model_setting_event->deleteEventByCode('vk');
             $this->model_setting_event->addEvent(
                 'vk',
                 'catalog/model/checkout/order/addOrderHistory/after',
@@ -604,6 +601,7 @@ class ControllerExtensionModuleVk extends Controller
 
         $this->load->model('extension/event');
 
+        $this->model_extension_event->deleteEvent('vk');
         $this->model_extension_event->addEvent(
             'vk',
             'catalog/model/checkout/order/addOrderHistory/after',
@@ -619,7 +617,7 @@ class ControllerExtensionModuleVk extends Controller
         if (version_compare(VERSION, '3.0', '>')) {
             $this->load->model('setting/event');
 
-            $this->model_setting_event->deleteEvent('vk');
+            $this->model_setting_event->deleteEventByCode('vk');
             return;
         }
         $this->load->model('extension/event');
