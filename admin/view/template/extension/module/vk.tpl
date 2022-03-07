@@ -396,7 +396,7 @@
 
     $('#export-offer').on('click', function () {
         $.ajax({
-            url: '<?php echo $catalog; ?>' + 'admin/index.php?route=extension/module/vk/exportOffer&token=' + token,
+            url: '<?php echo $catalog; ?>' + 'admin/index.php?route=extension/module/vk/exportOffer&' + token,
             beforeSend: function () {
                 $('#export-offer').button('loading');
             },
@@ -414,7 +414,7 @@
 
     $('#import-offer').on('click', function () {
       $.ajax({
-        url: '<?php echo $catalog; ?>' + 'admin/index.php?route=extension/module/vk/importOffer&token=' + token,
+        url: '<?php echo $catalog; ?>' + 'admin/index.php?route=extension/module/vk/importOffer&' + token,
         beforeSend: function () {
           $('#import-offer').button('loading');
         },
@@ -432,7 +432,7 @@
 
     $('#vk-event-on').on('click', function () {
         $.ajax({
-            url: '<?php echo $catalog; ?>' + 'admin/index.php?route=extension/module/vk/subscribeToVkEvents&token=' + token,
+            url: '<?php echo $catalog; ?>' + 'admin/index.php?route=extension/module/vk/subscribeToVkEvents&' + token,
             beforeSend: function () {
                 $('#vk-event-on').button('loading');
             },
@@ -449,7 +449,7 @@
 
     $('#vk-event-off').on('click', function () {
         $.ajax({
-            url: '<?php echo $catalog; ?>' + 'admin/index.php?route=extension/module/vk/unsubscribeToVkEvents&token=' + token,
+            url: '<?php echo $catalog; ?>' + 'admin/index.php?route=extension/module/vk/unsubscribeToVkEvents&' + token,
             beforeSend: function () {
                 $('#vk-event-off').button('loading');
             },
@@ -466,7 +466,7 @@
 
     $('#oc-event-on').on('click', function () {
         $.ajax({
-            url: '<?php echo $catalog; ?>' + 'admin/index.php?route=extension/module/vk/subscribeToOcEvents&token=' + token,
+            url: '<?php echo $catalog; ?>' + 'admin/index.php?route=extension/module/vk/subscribeToOcEvents&' + token,
             beforeSend: function () {
                 $('#oc-event-on').button('loading');
             },
@@ -483,7 +483,7 @@
 
     $('#oc-event-off').on('click', function () {
         $.ajax({
-            url: '<?php echo $catalog; ?>' + 'admin/index.php?route=extension/module/vk/unsubscribeToOcEvents&token=' + token,
+            url: '<?php echo $catalog; ?>' + 'admin/index.php?route=extension/module/vk/unsubscribeToOcEvents&' + token,
             beforeSend: function () {
                 $('#oc-event-off').button('loading');
             },

@@ -1,0 +1,497 @@
+{{ header }}{{ column_left }}
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="pull-right">
+        <button type="button" id="import-offer" data-toggle="tooltip" title="{{ button_import_offer }}"
+                class="btn btn-success btn-size" style="margin-right: 20px"><i class="fa fa-arrow-circle-down"></i></button>
+        <button type="submit" form="form-vk" data-toggle="tooltip" title="{{ button_save }}"
+                class="btn btn-primary btn-size"><i class="fa fa-save"></i></button>
+        <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}"
+           class="btn btn-default btn-size"><i class="fa fa-reply"></i></a>
+      </div>
+      <h1>{{ heading_title }}</h1>
+      <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+          <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="container-fluid">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <form id="form-vk" action="{{ action }}" method="post" class="form-horizontal js-vk-form">
+          <ul class="nav nav-tabs">
+            <li class="active"><a href="#tab-general" data-toggle="tab">{{ text_general_tab }}</a></li>
+            <li><a href="#tab-references" data-toggle="tab">{{ text_references_tab }}</a></li>
+            <li><a href="#tab-catalog" data-toggle="tab">{{ text_catalog_tab }}</a></li>
+            <li><a href="#tab-logs" data-toggle="tab">{{ text_logs_tab }}</a></li>
+          </ul>
+          <div class="tab-content">
+            <div class="tab-pane active" id="tab-general">
+              <fieldset>
+                {% if not vk_event_status %}
+                  vk_event_status  0
+                {% endif %}
+
+                <legend>{{ text_vk_event_legend }}</legend>
+                <div id="vk-event">
+                  <label class="col-sm-4 control-label">{{ text_vk_event_title }}</label>
+                  <button type="button" id="vk-event-on" data-toggle="tooltip"
+                          class="btn btn-primary {% if vk_event_status == 1 %} hidden {% endif %}"
+                          style="font-weight: bold">{{ button_on }}</button>
+                  <button type="button" id="vk-event-off" data-toggle="tooltip"
+                          class="btn btn-danger {% if vk_event_status == 0 %} hidden {% endif %}"
+                          style="font-weight: bold">{{ button_off }}</button>
+                </div>
+                <legend>{{ text_oc_event_legend }}</legend>
+                <div id="oc-event">
+                  <label class="col-sm-4 control-label">{{ text_oc_event_title }}</label>
+                  <button type="button" id="oc-event-on" data-toggle="tooltip"
+                          class="btn btn-primary {% if oc_event_status == 1 %} hidden {% endif %}"
+                          style="font-weight: bold">{{ button_on }}</button>
+                  <button type="button" id="oc-event-off" data-toggle="tooltip"
+                          class="btn btn-danger {% if oc_event_status == 0 %} hidden {% endif %}"
+                          style="font-weight: bold">{{ button_off }}</button>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-6">
+                  <label class="control-label" style="text-align:left!important;color: indianred;"
+                         for="oc-event">{{ text_oc_event_warning }}</label>
+                </div>
+              </fieldset>
+            </div>
+            <div class="tab-pane" id="tab-references">
+              <fieldset>
+                <legend>{{ text_status_legend }}</legend>
+                <div class="form-group">
+                  <label class="col-sm-2 control-label">{{ text_status_title }}</label>
+                  <div class="col-sm-10">
+                    {% for code, name in statuses.vk %}
+                      <div class="row vk_unit">
+                        <div class="col-lg-4 col-md-6 col-sm-6">
+                          <select id="vk_settings_status_{{ code }}" name="vk_settings_status[{{ code }}]"
+                                  class="form-control">
+                            {% for status in statuses.opencart %}
+                              <option value="{{ status.order_status_id }}"
+                                      {% if saved_settings.vk_settings_status[code]  and  status.order_status_id == saved_settings.vk_settings_status[code] %}
+                                selected="selected"{% endif %}>
+                                {{ status.name }}
+                              </option>
+                            {% endfor %}
+                          </select>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-sm-6">
+                          <label class="control-label" style="text-align:left!important;"
+                                 for="vk_settings_status_{{ code }}">{{ name }}</label>
+                        </div>
+                      </div>
+                    {% endfor %}
+                  </div>
+                </div>
+                <legend>{{ text_delivery_legend }}</legend>
+                <div class="form-group">
+                  <label class="col-sm-2 control-label">{{ text_delivery_title }}</label>
+                  <div class="col-sm-10">
+                    <div class="row">
+                      {% if  delivery.opencart  %}
+                        {% for code, title in delivery.vk %}
+                          <div class="col-sm-12" style="margin-bottom:10px;">
+                            <div class="row vk_unit">
+                              <div class="col-lg-4 col-md-6 col-sm-6">
+                                <select id="vk_settings_delivery_{{ code }}"
+                                        name="vk_settings_delivery[{{ code }}]" class="form-control">
+                                  <option value="not_delivery"
+                                          {% if saved_settings.vk_settings_delivery.code  and  'not_delivery' == saved_settings.vk_settings_delivery.code %}
+                                    selected="selected"{% endif %}>
+                                    {{ text_not_delivery }}
+                                  </option>
+
+                                  {% for value in delivery.opencart %}
+                                    {% for key,val in value %}
+                                      {% set code_oc = key %}
+                                      {% set title_oc = val.title %}
+                                    {% endfor %}
+
+                                    <option value="{{ code_oc }}"
+                                            {% if (saved_settings.vk_settings_delivery[code] is defined and code_oc == saved_settings.vk_settings_delivery[code]) %}
+                                      selected="selected"{% endif %}>
+                                      {{ title_oc }}
+                                    </option>
+
+                                  {% endfor %}
+                                </select>
+                              </div>
+                              <div class="col-lg-4 col-md-6 col-sm-6">
+                                <label class="control-label" style="text-align:left!important;"
+                                       for="vk_settings_delivery_{{ code }}">{{ title }}</label>
+                              </div>
+                            </div>
+                          </div>
+                        {% endfor %}
+                      {% else %}
+                        <div class="alert alert-info"><i class="fa fa-exclamation-circle"></i>
+                          <button type="button" class="close" data-dismiss="alert">&times;</button>
+                          {{ text_error_delivery }}
+                        </div>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+                <legend>{{ text_units_legend }}</legend>
+                <div class="form-group">
+                  <label class="col-sm-2 control-label">{{ text_units_length_title }}</label>
+                  <div class="col-sm-10">
+                    <div class="row">
+                      {% if  length_classes.opencart  %}
+                        {% for lengthUnit, lengthFactor in length_classes.vk %}
+                          <div class="col-sm-12" style="margin-bottom:10px;">
+                            <div class="row vk_unit">
+                              <div class="col-lg-4 col-md-6 col-sm-6">
+                                <select id="vk_settings_length_{{ lengthUnit }}"
+                                        name="vk_settings_length[{{ lengthUnit }}]" class="form-control">
+
+                                  <option value="not_unit"
+                                          {% if saved_settings.vk_settings_length[lengthUnit]  and  'not_unit' == saved_settings.vk_settings_length[lengthUnit] %}
+                                    selected="selected"{% endif %}>
+                                    {{ text_not_unit }}
+                                  </option>
+
+                                  {% for length_class in length_classes.opencart %}
+                                    <option value="{{ length_class.length_class_id }}"
+                                            {% if saved_settings.vk_settings_length[lengthUnit]  and  length_class.length_class_id == saved_settings.vk_settings_length[lengthUnit] %}
+                                      selected="selected"{% endif %}>
+                                      {{ length_class.title }}
+                                    </option>
+
+                                  {% endfor %}
+                                </select>
+                              </div>
+                              <div class="col-lg-4 col-md-6 col-sm-6">
+                                <label class="control-label" style="text-align:left!important;"
+                                       for="vk_settings_length_{{ lengthUnit }}">{{ units_title[lengthUnit] }}</label>
+                              </div>
+                            </div>
+                          </div>
+                        {% endfor %}
+                      {% else %}
+                        <div class="alert alert-info"><i class="fa fa-exclamation-circle"></i>
+                          <button type="button" class="close" data-dismiss="alert">&times;</button>
+                          {{ text_error_units_classes }}
+                        </div>
+                      {% endif %}
+                    </div>
+                  </div>
+                  <label class="col-sm-2 control-label">{{ text_units_weight_title }}</label>
+                  <div class="col-sm-10">
+                    <div class="row">
+                      {% if  weight_classes.opencart  %}
+                        {% for weightUnit, weightFactor in weight_classes.vk %}
+                          <div class="col-sm-12" style="margin-bottom:10px;">
+                            <div class="row vk_unit">
+                              <div class="col-lg-4 col-md-6 col-sm-6">
+                                <select id="vk_settings_weight_{{ weightUnit }}"
+                                        name="vk_settings_weight[{{ weightUnit }}]" class="form-control">
+                                  <option value="not_unit"
+                                          {% if saved_settings.vk_settings_weight[weightUnit]  and  'not_unit' == saved_settings.vk_settings_weight[weightUnit] %}
+                                    selected="selected"{% endif %}>
+                                    {{ text_not_unit }}
+                                  </option>
+                                  {% for weight_class in weight_classes.opencart %}
+                                    <option value="{{ weight_class.weight_class_id }}"
+                                            {% if saved_settings.vk_settings_weight[weightUnit]  and  weight_class.weight_class_id == saved_settings.vk_settings_weight[weightUnit] %}
+                                      selected="selected"{% endif %}>
+                                      {{ weight_class.title }}
+                                    </option>
+                                  {% endfor %}
+                                </select>
+                              </div>
+                              <div class="col-lg-4 col-md-6 col-sm-6">
+                                <label class="control-label" style="text-align:left!important;"
+                                       for="vk_settings_weight_{{ weightUnit }}">{{ units_title[weightUnit] }}</label>
+                              </div>
+                            </div>
+                          </div>
+                        {% endfor %}
+                      {% else %}
+                        <div class="alert alert-info"><i class="fa fa-exclamation-circle"></i>
+                          <button type="button" class="close" data-dismiss="alert">&times;</button>
+                          {{ text_error_units_classes }}
+                        </div>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+                <legend>{{ text_default_legend }}</legend>
+                <div class="form-group">
+                  <label class="col-sm-2 control-label"></label>
+                  <div class="col-sm-10">
+                    <div class="row">
+                      {% if  delivery.opencart  %}
+                        <div class="col-sm-12" style="margin-bottom:10px;">
+                          <div class="row vk_unit">
+                            <div class="col-lg-4 col-md-6 col-sm-6">
+                              <select id="vk_settings_delivery_default"
+                                      name="vk_settings_delivery_default" class="form-control">
+                                {% for value in delivery.opencart %}
+                                  {% for key,val in value %}
+                                    {% set code_oc = key %}
+                                    {% set title_oc = value.title %}
+                                  {% endfor %}
+                                  <option value="{{ code_oc }}"
+                                          {% if saved_settings.vk_settings_delivery_default  and  code_oc == saved_settings.vk_settings_delivery_default %}
+                                    selected="selected"{% endif %}>
+                                    {{ title_oc }}
+                                  </option>
+                                {% endfor %}
+                              </select>
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-sm-6">
+                              <label class="control-label" style="text-align:left!important;"
+                                     for="vk_settings_delivery_default">{{ text_delivery_default_title }}</label>
+                            </div>
+                          </div>
+                        </div>
+                      {% else %}
+                        <div class="alert alert-info"><i class="fa fa-exclamation-circle"></i>
+                          <button type="button" class="close" data-dismiss="alert">&times;</button>
+                          {{ text_error_delivery }}
+                        </div>
+                      {% endif %}
+                    </div>
+                  </div>
+                  <label class="col-sm-2 control-label"></label>
+                  <div class="col-sm-10">
+                    <div class="row">
+                      {% if  payments.opencart  %}
+                        <div class="col-sm-12" style="margin-bottom:10px;">
+                          <div class="row vk_unit">
+                            <div class="col-lg-4 col-md-6 col-sm-6">
+                              <select id="vk_settings_payment_default"
+                                      name="vk_settings_payment_default" class="form-control">
+                                {% for code_oc, title_oc in payments.opencart %}
+                                  <option value="{{ code_oc }}"
+                                          {% if saved_settings.vk_settings_payment_default  and  code_oc == saved_settings.vk_settings_payment_default %}
+                                    selected="selected"{% endif %}>
+                                    {{ title_oc }}
+                                  </option>
+                                {% endfor %}
+                              </select>
+                            </div>
+                            <div class="col-lg-4 col-md-6 col-sm-6">
+                              <label class="control-label" style="text-align:left!important;"
+                                     for="vk_settings_payment_default">{{ text_payment_default_title }}</label>
+                            </div>
+                          </div>
+                        </div>
+                      {% else %}
+                        <div class="alert alert-info"><i class="fa fa-exclamation-circle"></i>
+                          <button type="button" class="close" data-dismiss="alert">&times;</button>
+                          {{ text_error_payment }}
+                        </div>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+              </fieldset>
+            </div>
+            <div class="tab-pane" id="tab-catalog">
+              <fieldset>
+                <legend>{{ text_load_catalog }}</legend>
+                <div class="form-group">
+                  <label class="col-sm-2 control-label">{{ text_list_product }}</label>
+                  <div class="col-lg-8 col-md-6 col-sm-10">
+                    <div class="well well-sm" style="height: 500px; overflow: auto;">
+                      <hr>
+                      {% for category in categories.opencart %}
+                        <div class="checkbox row slim">
+                          <label class="col-lg-4">
+                            <input type="checkbox" name="vk_settings_category-list[]"
+                                   value="{{ category.category_id }}"
+                                    {% if (saved_settings['vk_settings_category-list'] is defined and category['category_id'] in saved_settings['vk_settings_category-list']) %}
+                                      {{ 'checked' }}
+                                    {% endif %}
+                            >
+                            {{ category.name }}
+                            <span class="count-category-{{ category.category_id }}">{{ ' (' ~ category.count ~ ')' }}</span>
+                          </label>
+                          <label class="col-lg-4 col-lg-offset-4">
+                            <select class="select_vk_categories"
+                                    name="vk_settings_category-conformity[{{ category.category_id }}]">
+                              {% for vk_section in categories.vk %}
+                                <option value="{{ vk_section.id }}" disabled>
+                                  {{ vk_section.name}}
+                                </option>
+                                {% for vk_category in vk_section.categories %}
+                                  <option value="{{ vk_category.id }}"
+                                          {% if saved_settings.vk_settings_category-conformity.category.category_id  and  vk_category.id == saved_settings.vk_settings_category-conformity.category.category_id  %}
+                                            selected="selected"
+                                          {% endif %}
+                                  >
+                                    &mdash; {{ vk_category.name}}
+                                  </option>
+                                {% endfor %}
+                              {% endfor %}
+                            </select>
+                          </label>
+                        </div>
+                        <hr>
+                      {% endfor %}
+                    </div>
+                  </div>
+                </div>
+                <!--
+                <div class="col-lg-offset-2">
+                  <button type="submit" form="form-vk" data-toggle="tooltip" title="{{ button_save }}"
+                          class="btn btn-primary"
+                          style="font-weight: bold">{{ button_save_export_offer }}</button>
+                  <button type="button" id="export-offer" data-toggle="tooltip"
+                          class="btn btn-success"
+                          style="font-weight: bold">{{ button_export_offer }}</button>
+                </div>
+                -->
+              </fieldset>
+            </div>
+            <div class="tab-pane" id="tab-logs">
+              <fieldset style="margin-bottom: 30px;">
+                <legend>VK API error log</legend>
+                <div class="vk_unit">
+                  <a onclick="confirm('{{ text_confirm_log }}') ? location.href='{{ clear_vk }}' : false;"
+                     data-toggle="tooltip" title="{{ button_clear }}" class="btn btn-danger"><i
+                            class="fa fa-eraser"></i> <span class="hidden-xs">{{ button_clear }}</span></a>
+                  {% if logs.vk_detail != ''  %}
+                    <a href="{{ logs.vk_detail }}" class="btn btn-success">{{ text_vk_detail }}</a>
+                  {% endif %}
+                </div>
+                {% if  logs.vk_log  %}
+                  <div class="row">
+                    <div class="col-sm-12">
+                    <textarea wrap="off" rows="15" readonly
+                              class="form-control">{{ logs.vk_log }}</textarea>
+                    </div>
+                  </div>
+                {% elseif  logs.vk_error  %}
+                  <div class="alert alert-danger alert-dismissible"><i
+                            class="fa fa-exclamation-circle"></i> {{ logs.vk_error }}
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                  </div>
+                {% endif %}
+              </fieldset>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{{ footer }}
+
+<script type="text/javascript">
+
+  var token = '{{ token }}';
+
+  $('#export-offer').on('click', function () {
+    $.ajax({
+      url: '{{ catalog }}' + 'admin/index.php?route=extension/module/vk/exportOffer&' + token,
+      beforeSend: function () {
+        $('#export-offer').button('loading');
+      },
+      complete: function () {
+        $('.alert-success').remove();
+        $('#content > .container-fluid').prepend('<div class="alert alert-success"><i class="fa fa-exclamation-circle"></i> {{ text_success_export_offer }}</div>');
+        $('#export-offer').button('reset');
+      },
+      error: function (e) {
+        console.log(e);
+        alert('error');
+      }
+    });
+  });
+
+  $('#import-offer').on('click', function () {
+    $.ajax({
+      url: '{{ catalog }}' + 'admin/index.php?route=extension/module/vk/importOffer&' + token,
+      beforeSend: function () {
+        $('#import-offer').button('loading');
+      },
+      complete: function () {
+        $('.alert-success').remove();
+        $('#content > .container-fluid').prepend('<div class="alert alert-success"><i class="fa fa-exclamation-circle"></i> {{ text_success_import_offer }}</div>');
+        $('#import-offer').button('reset');
+      },
+      error: function (e) {
+        console.log(e);
+        alert('error');
+      }
+    });
+  });
+
+  $('#vk-event-on').on('click', function () {
+    $.ajax({
+      url: '{{ catalog }}' + 'admin/index.php?route=extension/module/vk/subscribeToVkEvents&' + token,
+      beforeSend: function () {
+        $('#vk-event-on').button('loading');
+      },
+      complete: function () {
+        $('#vk-event-on').addClass('hidden').button('reset');
+        $('#vk-event-off').removeClass('hidden');
+      },
+      error: function (e) {
+        console.log(e);
+        alert('error');
+      }
+    });
+  });
+
+  $('#vk-event-off').on('click', function () {
+    $.ajax({
+      url: '{{ catalog }}' + 'admin/index.php?route=extension/module/vk/unsubscribeToVkEvents&' + token,
+      beforeSend: function () {
+        $('#vk-event-off').button('loading');
+      },
+      complete: function () {
+        $('#vk-event-off').addClass('hidden').button('reset');
+        $('#vk-event-on').removeClass('hidden');
+      },
+      error: function (e) {
+        console.log(e);
+        alert('error');
+      }
+    });
+  });
+
+  $('#oc-event-on').on('click', function () {
+    $.ajax({
+      url: '{{ catalog }}' + 'admin/index.php?route=extension/module/vk/subscribeToOcEvents&' + token,
+      beforeSend: function () {
+        $('#oc-event-on').button('loading');
+      },
+      complete: function () {
+        $('#oc-event-on').addClass('hidden').button('reset');
+        $('#oc-event-off').removeClass('hidden');
+      },
+      error: function (e) {
+        console.log(e);
+        alert('error');
+      }
+    });
+  });
+
+  $('#oc-event-off').on('click', function () {
+    $.ajax({
+      url: '{{ catalog }}' + 'admin/index.php?route=extension/module/vk/unsubscribeToOcEvents&' + token,
+      beforeSend: function () {
+        $('#oc-event-off').button('loading');
+      },
+      complete: function () {
+        $('#oc-event-off').addClass('hidden').button('reset');
+        $('#oc-event-on').removeClass('hidden');
+      },
+      error: function (e) {
+        console.log(e);
+        alert('error');
+      }
+    });
+  });
+
+</script>
