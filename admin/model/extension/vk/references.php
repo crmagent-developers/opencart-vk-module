@@ -135,7 +135,9 @@ class ModelExtensionVkReferences extends Model
     {
         $shares = array();
 
-        $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "product_special");
+        $date = date('Y-m-d');
+
+        $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "product_special WHERE date_end >= '" . $date . "'");
 
         foreach ($query->rows as $row) {
             if (!key_exists($row['product_id'], $shares)) {
@@ -167,8 +169,8 @@ class ModelExtensionVkReferences extends Model
 
         if (version_compare(VERSION, '3.0', '>=')) {
             $sql = "SELECT * FROM " . DB_PREFIX . "seo_url";
-            $sql .= " WHERE store_id = " . (int)$this->config->get('store_id');
-            $sql .= " AND language_id = " . (int)$this->config->get('language_id');
+            $sql .= " WHERE store_id = " . (int)$this->config->get('config_store_id');
+            $sql .= " AND language_id = " . (int)$this->config->get('config_language_id');
             $sql .= " AND (query LIKE 'category_id=%' OR query LIKE 'product_id=%')";
         }
 

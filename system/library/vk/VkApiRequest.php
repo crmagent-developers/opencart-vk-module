@@ -131,10 +131,10 @@ class VkApiRequest
             $response = $this->http_client->upload($upload_url, $parameter_name, $path);
             $response_body = $this->parseResponse($response);
         } catch (TransportRequestException $e) {
-            $this->logger->write($e->getErrorCode() . ' - ' . $e->getErrorMessage(), 'vk_short', 'string');
+            $this->logger->write($e->getCode() . ' - ' . $e->getMessage(), 'vk_short', 'string');
             $this->logger->write([
-                'error_code' => $e->getErrorCode(),
-                'error_message' => $e->getErrorMessage(),
+                'error_code' => $e->getCode(),
+                'error_message' => $e->getMessage(),
                 'upload_url' => $upload_url,
                 'parameter_name' => $parameter_name,
                 'path' => $path

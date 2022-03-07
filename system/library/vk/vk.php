@@ -324,7 +324,7 @@ class vk
     {
         $id = $this->checkImage($pathImage, $source_id, $flag);
 
-        if (isset($id)) {
+        if ($id) {
 
             return $id;
         }
@@ -344,7 +344,7 @@ class vk
             ]);
         }
 
-        return isset($id) ? (int)$id : false;
+        return $id ? (int)$id : false;
     }
 
     /**
@@ -436,7 +436,7 @@ class vk
      */
     private function loadPhoto($upload_url, $pathImage)
     {
-        if ($upload_url != false) {
+        if ($upload_url != false && $pathImage) {
             return $this->vkApiClient->getRequest()->upload(
                 $upload_url['upload_url'],
                 'photo',
@@ -578,7 +578,7 @@ class vk
 
                 $quantity = $product['quantity'];
 
-                if (isset($newPrice)) {
+                if (!empty($newPrice)) {
                     $price = $newPrice;
                     $oldPrice = $product['price'];
                 } else {
@@ -593,7 +593,7 @@ class vk
 
                 if (!empty($offerId)) {
                     $price = $price + $optionsValues['price'];
-                    $oldPrice = isset($oldPrice) ? $oldPrice + $optionsValues['price'] : null;
+                    $oldPrice = !empty($oldPrice) ? $oldPrice + $optionsValues['price'] : null;
                     $quantity = $optionsValues['qty'];
 
                     $description .= 'Option SKU: ' . $offerId . PHP_EOL . PHP_EOL;
@@ -607,9 +607,19 @@ class vk
                     $offerId = 0;
                 }
 
-                if (isset($product['description'])) {
+                if (!empty($product['description'])) {
 //                    $description .= preg_replace("(\<(\/?[^>]+)>)", '', html_entity_decode($product['description'], ENT_QUOTES));
                     $description .= html_entity_decode(strip_tags(html_entity_decode($product['description'])));
+                }
+
+                $sku = null;
+
+                if (!empty($product['sku'])) {
+                    $sku = $product['sku'];
+                }
+
+                if (!$sku && !empty($product['model'])) {
+                    $sku = $product['model'];
                 }
 
                 $data = array(
@@ -624,15 +634,19 @@ class vk
                     'dimension_height' => $product['height'] > 0 ? $this->getLength($product['height'], $product['length_class_id']) : null,
                     'dimension_length' => $product['length'] > 0 ? $this->getLength($product['length'], $product['length_class_id']) : null,
                     'weight' => $product['weight'] > 0 ? $this->getWeight($product['weight'], $product['weight_class_id']) : null,
-                    'sku' => isset($product['sku']) ? $product['sku'] : null
+                    'sku' => $sku
                 );
 
                 if (!empty($oldPrice)) {
                     $data['old_price'] = $oldPrice;
                 }
 
-                if (isset($product['image'])) {
-                    $image_id = (int)$this->getImageId($product['image'], $product['product_id'] . '*' . $offerId, 'product_main_photo_id');
+                if (!empty($product['image'])) {
+                    $image_id = false;
+
+                    if (file_exists(DIR_IMAGE . $product['image'])) {
+                        $image_id = (int)$this->getImageId($product['image'], $product['product_id'] . '*' . $offerId, 'product_main_photo_id');
+                    }
 
                     if ($image_id != false) {
                         $data['main_photo_id'] = $image_id;
@@ -641,7 +655,7 @@ class vk
                     }
                 }
 
-                if ($quantity < 1) {
+                if ($quantity < 1 || !$product['status']) {
                     if (!empty($product['offers_vk']) && key_exists($offerId, $product['offers_vk'])) {
                         $this->deleteProduct($product['offers_vk'][$offerId]['vk_id'], $product['product_id'], $offerId);
 
