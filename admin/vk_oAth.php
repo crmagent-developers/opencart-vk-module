@@ -9,11 +9,11 @@ require_once DIR_CONFIG . 'admin.php';
 
 require_once DIR_SYSTEM . 'library/vk/vk.php';
 
-$db = new DB($_['db_type'], $_['db_hostname'], $_['db_username'], $_['db_password'], $_['db_database'], $_['db_port']);
+$db = new DB(DB_DRIVER, DB_HOSTNAME, DB_USERNAME, DB_PASSWORD, DB_DATABASE, DB_PORT);
 $settings = $db->query("SELECT * FROM " . DB_PREFIX . "setting WHERE store_id = '" . 0 . "' AND `code` = '" . $db->escape('vk_oath') . "'");
 
 foreach ($settings->rows as $row) {
-     $setting_data[$row['key']] = $row['value'];
+    $setting_data[$row['key']] = $row['value'];
 }
 
 # 1 шаг авторизации

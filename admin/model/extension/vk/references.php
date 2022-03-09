@@ -71,6 +71,7 @@ class ModelExtensionVkReferences extends Model
     private function getOpercartCategories()
     {
         $this->load->model('catalog/category');
+        $this->load->model('catalog/product');
 
         $categories = $this->model_catalog_category->getCategories(['sort' => 'name']);
 
@@ -134,7 +135,9 @@ class ModelExtensionVkReferences extends Model
     {
         $shares = array();
 
-        $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "product_special");
+        $date = date('Y-m-d');
+
+        $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "product_special WHERE date_end >= '" . $date . "'");
 
         foreach ($query->rows as $row) {
             if (!key_exists($row['product_id'], $shares)) {
@@ -161,7 +164,17 @@ class ModelExtensionVkReferences extends Model
     {
         $links = array();
 
-        $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "url_alias");
+        $sql = "SELECT * FROM " . DB_PREFIX . "url_alias";
+        $sql .= " AND (query LIKE 'category_id=%' OR query LIKE 'product_id=%')";
+
+        if (version_compare(VERSION, '3.0', '>=')) {
+            $sql = "SELECT * FROM " . DB_PREFIX . "seo_url";
+            $sql .= " WHERE store_id = " . (int)$this->config->get('config_store_id');
+            $sql .= " AND language_id = " . (int)$this->config->get('config_language_id');
+            $sql .= " AND (query LIKE 'category_id=%' OR query LIKE 'product_id=%')";
+        }
+
+        $query = $this->db->query($sql);
 
         foreach ($query->rows as $row) {
 
