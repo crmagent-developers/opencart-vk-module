@@ -576,6 +576,7 @@ class vk
                 $offerId = array();
                 $description = '';
 
+                $product_name = strip_tags(html_entity_decode($product['name'], ENT_QUOTES, 'UTF-8'));
                 $quantity = $product['quantity'];
 
                 if (!empty($newPrice)) {
@@ -598,9 +599,13 @@ class vk
 
                     $description .= 'Option SKU: ' . $offerId . PHP_EOL . PHP_EOL;
 
+                    $option_name = [];
                     foreach ($options as $option) {
+                        $option_name[] = $option['name'] . ': ' . $option['value'];
                         $description .= $option['name'] . ': ' . $option['value'] . PHP_EOL;
                     }
+
+                    $product_name = $product['name'] . ' ' . join(', ', $option_name);
 
                     $description .= '________________________________________' . PHP_EOL;
                 } else {
@@ -608,8 +613,7 @@ class vk
                 }
 
                 if (!empty($product['description'])) {
-//                    $description .= preg_replace("(\<(\/?[^>]+)>)", '', html_entity_decode($product['description'], ENT_QUOTES));
-                    $description .= html_entity_decode(strip_tags(html_entity_decode($product['description'])));
+                    $description .= strip_tags(html_entity_decode($product['description'], ENT_QUOTES, 'UTF-8'));
                 }
 
                 $sku = null;
@@ -624,11 +628,12 @@ class vk
 
                 $data = array(
                     'owner_id' => (int)$this->oath['vk_oath_id_group'],
-                    'name' => html_entity_decode($product['name']),
-                    'description' => !empty($description) ? $description : html_entity_decode($product['name']),
+                    'name' => $product_name,
+                    'description' => !empty($description) ? $description : $product_name,
                     'category_id' => (int)$this->settings['vk_settings_category-conformity'][$id_main_category],
                     'price' => $price,
-//                    'deleted' => $quantity > 0 ? 0 : 1,
+                    'quantity' => $quantity,
+                    'deleted' => !(int)$product['status'],// 0 не удален / 1 удален
                     'url' => $link,
                     'dimension_width' => $product['width'] > 0 ? $this->getLength($product['width'], $product['length_class_id']) : null,
                     'dimension_height' => $product['height'] > 0 ? $this->getLength($product['height'], $product['length_class_id']) : null,
@@ -683,7 +688,7 @@ class vk
                     }
 
                     $createdGoods++;
-                //Если есть, то обновляем
+                    //Если есть, то обновляем
                 } else {
                     $data['item_id'] = $product['offers_vk'][$offerId]['vk_id'];
                     $this->vkApiClient->market()->edit($data);

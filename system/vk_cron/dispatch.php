@@ -138,6 +138,8 @@ if (version_compare(VERSION, '3.0', '<')) {
     $session = new Session($config->get('session_engine'), $registry);
 }
 
+$session->data['user_token'] = 1; // if opencart ver >= 3
+
 $registry->set('session', $session);
 
 $languages = array();

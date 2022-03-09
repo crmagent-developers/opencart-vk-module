@@ -8,7 +8,7 @@ class VkApiRequest
      * @var string
      */
     private $host;
-    
+
     /**
      * @var string
      */
@@ -50,7 +50,7 @@ class VkApiRequest
      */
     public function __construct($access_token_user, $access_token_group, $api_version, $language, $host) {
         $this->logger = new \Logger();
-        $this->http_client = new \VkHttpClient(10);
+        $this->http_client = new \VkHttpClient(30);
         $this->version = $api_version;
         $this->host = $host;
         $this->language = $language;
@@ -93,10 +93,10 @@ class VkApiRequest
             $response = $this->http_client->post($url, $params);
             $response_body = $this->parseResponse($response);
         } catch (TransportRequestException $e) {
-            $this->logger->write($e->getErrorCode() . ' - ' . $e->getErrorMessage(), 'vk_short', 'string');
+            $this->logger->write($e->getCode() . ' - ' . $e->getMessage(), 'vk_short', 'string');
             $this->logger->write([
-                'error_code' => $e->getErrorCode(),
-                'error_message' => $e->getErrorMessage(),
+                'error_code' => $e->getCode(),
+                'error_message' => $e->getMessage(),
                 'post_url' => $url,
                 'request_params' => $params
             ], 'vk_detailed_logs');
